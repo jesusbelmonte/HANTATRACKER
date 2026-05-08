@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hantavirus MV Hondius: 5 Confirmed, 3 Dead | Live Tracker 2026</title>
+  <meta name="description" content="Live tracker for the hantavirus outbreak on polar cruise MV Hondius. 5 lab-confirmed cases, 3 deaths, 147 people aboard heading to Tenerife. WHO and official health data.">
+  <meta name="keywords" content="hantavirus cruise, MV Hondius, hantavirus outbreak 2026, hantavirus WHO, hantavirus Spain, hantavirus Tenerife, Andes hantavirus, crucero hantavirus, brote hantavirus 2026">
+  <meta property="og:title" content="Hantavirus MV Hondius: 5 Confirmed Cases, 3 Deaths — Live Tracker 2026">
+  <meta property="og:description" content="Polar cruise MV Hondius sails toward Tenerife with 147 people aboard after a confirmed Andes hantavirus outbreak. 3 dead. WHO risk assessment: low.">
+  <meta property="og:type" content="article">
+  <meta name="robots" content="index, follow">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+  <style>
+    /* ===== TOKENS ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:       #0b0b0b;
+      --bg2:      #111115;
+      --card:     #14141f;
+      --glass:    rgba(255,255,255,.045);
+      --gb:       rgba(255,255,255,.08);
+      --red:      #e63946;
+      --rdim:     rgba(230,57,70,.14);
+      --rglow:    rgba(230,57,70,.32);
+      --amber:    #f4a261;
+      --adim:     rgba(244,162,97,.14);
+      --teal:     #2ec4b6;
+      --tdim:     rgba(46,196,182,.14);
+      --blue:     #4895ef;
+      --bdim:     rgba(72,149,239,.14);
+      --violet:   #9b72cf;
+      --vdim:     rgba(155,114,207,.14);
+      --white:    #f5f5f7;
+      --sub:      #8e8e9a;
+      --muted:    #55556a;
+      --bdr:      rgba(255,255,255,.07);
+      --r:        10px;
+      --rl:       14px;
+      --ease:     .25s ease;
+      --font:     'Inter', -apple-system, sans-serif;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font); background: var(--bg); color: var(--white); line-height: 1.65; overflow-x: hidden; }
+    a { color: var(--red); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--muted); border-radius: 3px; }
+
+    /* ===== LAYOUT ===== */
+    .wrap { max-width: 1160px; margin: 0 auto; padding: 0 24px; }
+    section { padding: 64px 0; }
+    section + section { border-top: 1px solid var(--bdr); }
+
+    /* Fade-up animations */
+    .fu { opacity: 0; transform: translateY(24px); transition: opacity .6s ease, transform .6s ease; }
+    .fu.v  { opacity: 1; transform: none; }
+    .fu.d1 { transition-delay: .08s; }
+    .fu.d2 { transition-delay: .16s; }
+    .fu.d3 { transition-delay: .24s; }
+    .fu.d4 { transition-delay: .32s; }
+
+    /* ===== BREAKING TICKER ===== */
+    .ticker { background: var(--red); padding: 8px 0; overflow: hidden; position: relative; z-index: 1001; }
+    .ticker-in { display: flex; align-items: center; gap: 0; }
+    .ticker-lbl { background: rgba(0,0,0,.22); color: #fff; font-size: .66rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; padding: 3px 12px; border-radius: 3px; white-space: nowrap; margin-right: 18px; flex-shrink: 0; }
+    .ticker-track { overflow: hidden; flex: 1; }
+    .ticker-txt { display: inline-block; white-space: nowrap; font-size: .79rem; font-weight: 500; animation: tick 30s linear infinite; }
+    @keyframes tick { from { transform: translateX(100vw); } to { transform: translateX(-100%); } }
+
+    /* ===== HEADER ===== */
+    header { position: sticky; top: 0; z-index: 1000; height: 58px; background: rgba(11,11,11,.95); backdrop-filter: blur(16px); border-bottom: 1px solid var(--bdr); }
+    .hdr { display: flex; align-items: center; justify-content: space-between; height: 100%; }
+    .logo { display: flex; align-items: center; gap: 9px; font-size: 1rem; font-weight: 700; color: var(--white); letter-spacing: -.01em; }
+    .logo-dot { width: 9px; height: 9px; background: var(--red); border-radius: 50%; animation: blink 2s infinite; }
+    @keyframes blink { 0%,100%{ box-shadow: 0 0 0 0 var(--rglow); } 50%{ box-shadow: 0 0 0 5px transparent; } }
+    .hdr-nav { display: flex; gap: 2px; }
+    .hdr-nav a { color: var(--sub); font-size: .8rem; font-weight: 500; padding: 5px 11px; border-radius: 6px; transition: var(--ease); }
+    .hdr-nav a:hover { color: var(--white); background: var(--glass); text-decoration: none; }
+    .hdr-right { display: flex; align-items: center; gap: 8px; }
+    .lang-btn { background: var(--glass); border: 1px solid var(--bdr); color: var(--sub); font-family: var(--font); font-size: .76rem; font-weight: 600; padding: 5px 13px; border-radius: 6px; cursor: pointer; transition: var(--ease); letter-spacing: .02em; }
+    .lang-btn:hover { color: var(--white); border-color: rgba(255,255,255,.15); }
+    .lang-btn.active { background: var(--rdim); border-color: rgba(230,57,70,.3); color: var(--red); }
+    .back-btn { background: var(--glass); border: 1px solid var(--bdr); color: var(--sub); font-size: .76rem; font-weight: 500; padding: 5px 12px; border-radius: 6px; transition: var(--ease); }
+    .back-btn:hover { color: var(--white); text-decoration: none; }
+    .hamburger { display: none; background: none; border: none; color: var(--white); font-size: 1.3rem; cursor: pointer; padding: 4px; }
+
+    /* ===== BADGES ===== */
+    .badge { display: inline-flex; align-items: center; gap: 5px; font-size: .62rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: 3px 8px; border-radius: 100px; white-space: nowrap; }
+    .badge::before { content: ''; width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+    .bc { background: rgba(46,196,182,.14); color: var(--teal); border: 1px solid rgba(46,196,182,.25); }
+    .bc::before { background: var(--teal); }
+    .bi { background: var(--adim); color: var(--amber); border: 1px solid rgba(244,162,97,.25); }
+    .bi::before { background: var(--amber); }
+    .bo { background: var(--bdim); color: var(--blue); border: 1px solid rgba(72,149,239,.25); }
+    .bo::before { background: var(--blue); }
+    .bs { background: var(--vdim); color: var(--violet); border: 1px solid rgba(155,114,207,.25); }
+    .bs::before { background: var(--violet); }
+    .ba { background: var(--rdim); color: var(--red); border: 1px solid rgba(230,57,70,.25); }
+    .ba::before { background: var(--red); }
+
+    /* ===== HERO ===== */
+    #hero {
+      padding: 72px 0 0;
+      background: radial-gradient(ellipse 80% 55% at 50% -5%, rgba(230,57,70,.1) 0%, transparent 60%);
+    }
+    .hero-eye { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; }
+    .live-pill { background: var(--red); color: #fff; font-size: .63rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; padding: 4px 10px; border-radius: 100px; animation: pb 2s infinite; }
+    @keyframes pb { 0%,100%{ background: var(--red); } 50%{ background: #c1121f; } }
+    .upd-pill { background: var(--glass); border: 1px solid var(--bdr); color: var(--sub); font-size: .71rem; padding: 4px 12px; border-radius: 100px; }
+    .hero h1 { font-size: clamp(1.9rem, 5.5vw, 3.2rem); font-weight: 800; letter-spacing: -.04em; line-height: 1.07; margin-bottom: 16px; }
+    .hero h1 em { color: var(--red); font-style: normal; }
+    .hero-sub { font-size: 1rem; color: var(--sub); max-width: 580px; line-height: 1.76; margin-bottom: 44px; }
+
+    /* Metric cards */
+    .metrics { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 0; padding-bottom: 48px; }
+    .mc { background: var(--glass); border: 1px solid var(--gb); border-radius: var(--rl); padding: 22px 18px; backdrop-filter: blur(10px); position: relative; overflow: hidden; transition: var(--ease); }
+    .mc::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; opacity: 0; transition: var(--ease); }
+    .mc:hover::before { opacity: 1; }
+    .mc:hover { border-color: rgba(255,255,255,.13); }
+    .mc.cr::before { background: var(--red); }
+    .mc.ca::before { background: var(--amber); }
+    .mc.ct::before { background: var(--teal); }
+    .mc.cb::before { background: var(--blue); }
+    .mc-lbl { font-size: .64rem; font-weight: 700; text-transform: uppercase; letter-spacing: .09em; color: var(--muted); margin-bottom: 8px; }
+    .mc-val { font-size: 2.15rem; font-weight: 800; letter-spacing: -.04em; line-height: 1; }
+    .mc-val.r { color: var(--red); }
+    .mc-val.a { color: var(--amber); }
+    .mc-val.t { color: var(--teal); }
+    .mc-val.b { color: var(--blue); }
+    .mc-note { font-size: .68rem; color: var(--muted); margin-top: 5px; }
+    .mc-badge { margin-top: 10px; }
+
+    /* ===== MAP SECTION ===== */
+    #map-section { padding: 0 0 56px; border-top: none !important; }
+    .map-sec-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+    .map-toggle { display: flex; background: var(--card); border: 1px solid var(--bdr); border-radius: var(--r); padding: 4px; gap: 4px; }
+    .tbtn { padding: 7px 22px; border-radius: calc(var(--r) - 2px); font-size: .8rem; font-weight: 600; cursor: pointer; border: none; background: transparent; color: var(--sub); font-family: var(--font); transition: var(--ease); }
+    .tbtn.on { background: var(--red); color: #fff; }
+
+    .map-wrap { position: relative; border-radius: var(--rl); overflow: hidden; border: 1px solid var(--bdr); height: 500px; }
+    #map2d { width: 100%; height: 100%; display: block; }
+    #map3d { width: 100%; height: 100%; display: none; background: var(--bg); cursor: grab; }
+    #map3d:active { cursor: grabbing; }
+    #map3d canvas { display: block; width: 100% !important; height: 100% !important; }
+
+    /* Globe side panel */
+    .g-panel {
+      position: absolute; top: 14px; right: 14px; width: 252px; z-index: 10;
+      background: rgba(11,11,11,.94); backdrop-filter: blur(14px);
+      border: 1px solid rgba(230,57,70,.28); border-radius: var(--rl); padding: 16px; display: none;
+    }
+    .g-panel.show { display: block; }
+    .g-close { position: absolute; top: 9px; right: 9px; background: none; border: none; color: var(--muted); cursor: pointer; font-size: .9rem; }
+    .g-ctry { font-size: .64rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--red); margin-bottom: 3px; }
+    .g-reg  { font-size: .96rem; font-weight: 700; margin-bottom: 12px; }
+    .g-row  { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid var(--bdr); font-size: .78rem; }
+    .g-row:last-child { border-bottom: none; }
+    .g-lbl { color: var(--muted); } .g-val { font-weight: 600; }
+    .globe-hint { position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%); background: rgba(11,11,11,.7); border: 1px solid var(--bdr); border-radius: 100px; padding: 5px 16px; font-size: .7rem; color: var(--muted); white-space: nowrap; pointer-events: none; z-index: 10; }
+
+    /* Map legend & route info */
+    .map-legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 14px; }
+    .leg-i { display: flex; align-items: center; gap: 6px; font-size: .76rem; color: var(--sub); }
+    .leg-d { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+    .route-info { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-top: 16px; }
+    .ri { background: var(--glass); border: 1px solid var(--bdr); border-radius: var(--r); padding: 14px 16px; }
+    .ri-lbl { font-size: .63rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); margin-bottom: 4px; }
+    .ri-val { font-size: .88rem; font-weight: 600; }
+    .ri-sub { font-size: .73rem; color: var(--sub); margin-top: 3px; }
+
+    /* Leaflet popup */
+    .leaflet-popup-content-wrapper { background: var(--card) !important; border: 1px solid rgba(230,57,70,.25) !important; border-radius: var(--r) !important; box-shadow: 0 8px 32px rgba(0,0,0,.6) !important; color: var(--white) !important; }
+    .leaflet-popup-tip { background: var(--card) !important; }
+    .leaflet-popup-close-button { color: var(--muted) !important; }
+
+    /* ===== AD SLOTS ===== */
+    .ad { display: flex; align-items: center; justify-content: center; background: var(--bg2); border: 1px dashed rgba(255,255,255,.05); border-radius: var(--r); color: var(--muted); font-size: .64rem; letter-spacing: .06em; text-transform: uppercase; }
+    .ad-h { width: 100%; height: 90px; margin: 28px 0; }
+    .ad-sq { width: 300px; height: 250px; }
+
+    /* ===== GLASS CARD ===== */
+    .gc { background: var(--glass); border: 1px solid var(--gb); border-radius: var(--rl); padding: 24px; backdrop-filter: blur(8px); transition: var(--ease); }
+    .gc:hover { border-color: rgba(255,255,255,.13); }
+
+    /* ===== QUICK FACTS ===== */
+    #facts { background: var(--bg2); }
+    .facts-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 15px; }
+    .fc { background: var(--glass); border: 1px solid var(--gb); border-radius: var(--rl); padding: 22px; backdrop-filter: blur(8px); display: flex; flex-direction: column; gap: 9px; }
+    .fc-icon { font-size: 1.45rem; line-height: 1; }
+    .fc-lbl { font-size: .64rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+    .fc-val { font-size: 1.35rem; font-weight: 800; letter-spacing: -.03em; }
+    .fc-val.r { color: var(--red); } .fc-val.t { color: var(--teal); } .fc-val.a { color: var(--amber); }
+    .fc-desc { font-size: .79rem; color: var(--sub); line-height: 1.65; }
+
+    /* Section common */
+    .sec-lbl { font-size: .66rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; margin-bottom: 10px; }
+    .sec-title { font-size: clamp(1.4rem, 3vw, 2rem); font-weight: 800; letter-spacing: -.03em; margin-bottom: 12px; line-height: 1.15; }
+    .sec-sub { font-size: .93rem; color: var(--sub); max-width: 600px; line-height: 1.75; margin-bottom: 36px; }
+
+    /* ===== ARTICLE TEXT ===== */
+    .article { max-width: 720px; }
+    .article p { font-size: .94rem; color: rgba(245,245,247,.82); line-height: 1.82; margin-bottom: 18px; }
+    .article p strong { color: var(--white); font-weight: 600; }
+    .article .lead { font-size: 1.02rem; color: var(--sub); border-left: 3px solid var(--red); padding-left: 18px; margin-bottom: 22px; line-height: 1.78; }
+    .callout { background: var(--glass); border: 1px solid var(--gb); border-left: 3px solid var(--amber); border-radius: var(--r); padding: 14px 18px; margin: 18px 0; font-size: .83rem; color: var(--sub); line-height: 1.7; }
+    .callout.red  { border-left-color: var(--red); }
+    .callout.teal { border-left-color: var(--teal); }
+
+    /* ===== TRANSMISSION ===== */
+    .trans-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 32px; }
+    .tc { background: var(--glass); border: 1px solid var(--gb); border-radius: var(--rl); padding: 22px; backdrop-filter: blur(8px); }
+    .tc-icon { font-size: 1.7rem; margin-bottom: 10px; }
+    .tc-title { font-size: .91rem; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .tc-body { font-size: .8rem; color: var(--sub); line-height: 1.72; }
+    .tc-body ul { padding-left: 16px; }
+    .tc-body li { margin-bottom: 5px; }
+    .tc-body strong { color: var(--white); }
+
+    .incub-box { background: var(--bg2); border: 1px solid var(--bdr); border-radius: var(--rl); padding: 26px 30px; }
+    .incub-title { font-size: .76rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); margin-bottom: 18px; }
+    .incub-line { height: 6px; background: var(--gb); border-radius: 3px; overflow: hidden; margin-bottom: 12px; }
+    .incub-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--teal), var(--amber) 60%, var(--red)); width: 0; transition: width 1.3s ease; }
+    .incub-marks { display: flex; justify-content: space-between; }
+    .im { text-align: center; font-size: .69rem; color: var(--muted); }
+    .im strong { display: block; color: var(--white); font-size: .76rem; font-weight: 700; }
+    .incub-note { font-size: .77rem; color: var(--sub); margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--bdr); }
+
+    /* ===== GLOBAL CONTEXT ===== */
+    #context { background: var(--bg2); }
+    .ctx-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: start; }
+    .tbl-wrap { overflow-x: auto; border-radius: var(--r); border: 1px solid var(--bdr); }
+    table { width: 100%; border-collapse: collapse; font-size: .82rem; }
+    thead { background: var(--glass); border-bottom: 1px solid var(--bdr); }
+    th { padding: 10px 14px; text-align: left; font-size: .65rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); white-space: nowrap; }
+    td { padding: 10px 14px; color: var(--sub); border-bottom: 1px solid var(--bdr); }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover td { color: var(--white); }
+    td.bold { font-weight: 600; color: var(--white); }
+    td.red  { color: var(--red); font-weight: 600; }
+    td.teal { color: var(--teal); font-weight: 600; }
+
+    /* ===== RISK SECTION ===== */
+    .risk-banner { background: linear-gradient(135deg, rgba(46,196,182,.08), rgba(46,196,182,.03)); border: 1px solid rgba(46,196,182,.2); border-radius: var(--rl); padding: 28px 32px; margin-bottom: 28px; display: flex; align-items: flex-start; gap: 18px; }
+    .risk-icon { font-size: 2.4rem; flex-shrink: 0; line-height: 1; }
+    .risk-banner h3 { font-size: 1.15rem; font-weight: 800; margin-bottom: 7px; color: var(--teal); }
+    .risk-banner p { font-size: .86rem; color: var(--sub); line-height: 1.75; }
+    .myth-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 13px; }
+    .myth { background: var(--glass); border: 1px solid var(--gb); border-radius: var(--r); padding: 17px; }
+    .myth-head { display: flex; align-items: center; gap: 7px; margin-bottom: 7px; }
+    .myth-icon { font-size: 1.05rem; }
+    .myth-title { font-size: .81rem; font-weight: 700; }
+    .myth.false .myth-title { color: var(--red); }
+    .myth.true  .myth-title { color: var(--teal); }
+    .myth-body { font-size: .77rem; color: var(--sub); line-height: 1.64; }
+
+    /* ===== TIMELINE ===== */
+    .tl { position: relative; padding-left: 30px; }
+    .tl::before { content: ''; position: absolute; left: 5px; top: 0; bottom: 0; width: 1px; background: var(--bdr); }
+    .tl-item { position: relative; margin-bottom: 30px; }
+    .tl-item:last-child { margin-bottom: 0; }
+    .tl-dot { position: absolute; left: -28px; top: 3px; width: 13px; height: 13px; border-radius: 50%; border: 2px solid var(--bg); background: var(--muted); }
+    .tl-dot.r { background: var(--red); box-shadow: 0 0 0 4px var(--rdim); }
+    .tl-dot.a { background: var(--amber); box-shadow: 0 0 0 4px var(--adim); }
+    .tl-dot.t { background: var(--teal); box-shadow: 0 0 0 4px var(--tdim); }
+    .tl-dot.pulse { background: var(--red); animation: tlp 2s infinite; }
+    @keyframes tlp { 0%,100%{ box-shadow: 0 0 0 4px var(--rdim); } 50%{ box-shadow: 0 0 0 8px transparent; } }
+    .tl-date  { font-size: .66rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); margin-bottom: 4px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .tl-title { font-size: .91rem; font-weight: 700; margin-bottom: 4px; }
+    .tl-body  { font-size: .8rem; color: var(--sub); line-height: 1.67; }
+
+    /* ===== DASHBOARD ===== */
+    #dashboard { background: var(--bg2); }
+    .dash-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; }
+    .dc { background: var(--glass); border: 1px solid var(--gb); border-radius: var(--rl); padding: 22px 18px; text-align: center; backdrop-filter: blur(8px); }
+    .dc-val { font-size: 2.5rem; font-weight: 800; letter-spacing: -.04em; line-height: 1; margin-bottom: 5px; }
+    .dc-val.r { color: var(--red); } .dc-val.a { color: var(--amber); } .dc-val.t { color: var(--teal); } .dc-val.b { color: var(--blue); }
+    .dc-lbl { font-size: .66rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+    .dc-badge { margin-top: 8px; display: flex; justify-content: center; }
+
+    /* ===== FAQ ===== */
+    .faq-list { max-width: 740px; }
+    .faq-item { border: 1px solid var(--bdr); border-radius: var(--r); margin-bottom: 9px; overflow: hidden; transition: var(--ease); }
+    .faq-item:hover { border-color: rgba(255,255,255,.12); }
+    .faq-q { width: 100%; text-align: left; padding: 15px 20px; background: var(--glass); border: none; color: var(--white); font-family: var(--font); font-size: .87rem; font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 12px; transition: var(--ease); }
+    .faq-q:hover { background: rgba(255,255,255,.06); }
+    .faq-chev { color: var(--red); font-size: 1.1rem; flex-shrink: 0; }
+    .faq-a { display: none; padding: 4px 20px 17px; background: rgba(0,0,0,.18); font-size: .82rem; color: var(--sub); line-height: 1.76; }
+    .faq-a strong { color: var(--white); }
+
+    /* ===== FOOTER ===== */
+    footer { border-top: 1px solid var(--bdr); padding: 48px 0 28px; }
+    .disclaimer { background: var(--glass); border: 1px solid var(--bdr); border-left: 3px solid var(--amber); border-radius: var(--r); padding: 14px 20px; margin-bottom: 32px; font-size: .76rem; color: var(--muted); line-height: 1.72; }
+    .disclaimer strong { color: var(--sub); }
+    .foot-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 40px; margin-bottom: 28px; }
+    .fb h3 { font-size: .96rem; font-weight: 700; margin-bottom: 7px; }
+    .fb p { font-size: .76rem; color: var(--muted); line-height: 1.72; max-width: 310px; }
+    .flc h4 { font-size: .63rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-bottom: 11px; }
+    .flc ul { list-style: none; }
+    .flc li { margin-bottom: 7px; }
+    .flc a { font-size: .78rem; color: var(--sub); transition: var(--ease); }
+    .flc a:hover { color: var(--white); text-decoration: none; }
+    .foot-bot { border-top: 1px solid var(--bdr); padding-top: 18px; display: flex; flex-direction: column; gap: 5px; }
+    .foot-bot p { font-size: .72rem; color: var(--muted); }
+    .manual-note { font-size: .68rem; color: var(--muted); opacity: .65; font-style: italic; margin-top: 3px; }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 960px) {
+      .metrics { grid-template-columns: repeat(2,1fr); }
+      .facts-grid { grid-template-columns: repeat(2,1fr); }
+      .trans-grid { grid-template-columns: 1fr; }
+      .ctx-grid { grid-template-columns: 1fr; }
+      .myth-grid { grid-template-columns: 1fr; }
+      .dash-grid { grid-template-columns: repeat(2,1fr); }
+      .foot-grid { grid-template-columns: 1fr 1fr; }
+      .fb { grid-column: 1/-1; }
+      .route-info { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 680px) {
+      .hdr-nav { display: none; }
+      .hdr-nav.open { display: flex; flex-direction: column; position: fixed; top: 58px; left: 0; right: 0; background: rgba(11,11,11,.98); padding: 14px; border-bottom: 1px solid var(--bdr); z-index: 999; }
+      .hamburger { display: block; }
+      .facts-grid { grid-template-columns: 1fr; }
+      .map-wrap { height: 380px; }
+      .dash-grid { grid-template-columns: repeat(2,1fr); }
+      .foot-grid { grid-template-columns: 1fr; }
+      section { padding: 50px 0; }
+      .metrics { gap: 10px; }
+    }
+    @media (max-width: 440px) {
+      .metrics { grid-template-columns: 1fr 1fr; }
+      .mc-val { font-size: 1.7rem; }
+      .dash-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===== BREAKING TICKER ===== -->
+<div class="ticker">
+  <div class="wrap ticker-in">
+    <span class="ticker-lbl" id="t-lbl">Breaking</span>
+    <div class="ticker-track">
+      <span class="ticker-txt" id="t-txt">
+        HANTAVIRUS · MV Hondius heading to Tenerife · 5 lab-confirmed cases · 3 deaths · 1 critical in Johannesburg · WHO risk: LOW · 147 people aboard · No Spanish nationals symptomatic · Emergency protocols active · Andes strain confirmed
+      </span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== HEADER ===== -->
+<header>
+  <div class="wrap hdr">
+    <div class="logo"><div class="logo-dot"></div>HantaTracker</div>
+    <nav class="hdr-nav" id="main-nav">
+      <a href="#facts" data-en="Quick Facts" data-es="Lo que se sabe">Quick Facts</a>
+      <a href="#situation" data-en="Situation" data-es="Situación">Situation</a>
+      <a href="#transmission" data-en="Transmission" data-es="Transmisión">Transmission</a>
+      <a href="#risk" data-en="Risk" data-es="Riesgo">Risk</a>
+      <a href="#timeline" data-en="Timeline" data-es="Cronología">Timeline</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <div class="hdr-right">
+      <button class="lang-btn" id="lang-btn" onclick="toggleLang()">ES</button>
+      <a href="index.html" class="back-btn" data-en="← Tracker" data-es="← Tracker">← Tracker</a>
+      <button class="hamburger" id="hamburger">☰</button>
+    </div>
+  </div>
+</header>
+
+<!-- ===== HERO ===== -->
+<section id="hero">
+  <div class="wrap">
+    <div class="hero-eye fu">
+      <span class="live-pill" data-en="Active Situation" data-es="Situación activa">Active Situation</span>
+      <span class="upd-pill" data-en="Updated: May 8, 2026 · WHO / Spain Ministry of Health" data-es="Actualizado: 8 mayo 2026 · OMS / Sanidad España">Updated: May 8, 2026 · WHO / Spain Ministry of Health</span>
+    </div>
+    <h1 class="fu d1" id="hero-title">
+      <em>Hantavirus</em> Outbreak<br>on Polar Cruise<br>MV Hondius
+    </h1>
+    <p class="hero-sub fu d2" id="hero-sub">
+      The expedition cruise ship MV Hondius is sailing toward Tenerife with 147 people aboard after a confirmed Andes-strain hantavirus outbreak. Emergency health protocols are active. WHO classifies global risk as <strong>low</strong>.
+    </p>
+
+    <!-- METRIC CARDS -->
+    <div class="metrics">
+      <div class="mc cr fu d1">
+        <div class="mc-lbl" data-en="Total Cases" data-es="Casos totales">Total Cases</div>
+        <div class="mc-val r">8</div>
+        <div class="mc-note" data-en="5 lab-confirmed · 3 suspected" data-es="5 confirmados lab · 3 sospechosos">5 lab-confirmed · 3 suspected</div>
+        <div class="mc-badge"><span class="badge bc" data-en="Confirmed" data-es="Confirmado">Confirmed</span></div>
+      </div>
+      <div class="mc ca fu d2">
+        <div class="mc-lbl" data-en="Deaths" data-es="Fallecidos">Deaths</div>
+        <div class="mc-val a">3</div>
+        <div class="mc-note" data-en="Of 8 total cases" data-es="De 8 casos totales">Of 8 total cases</div>
+        <div class="mc-badge"><span class="badge bc" data-en="Confirmed" data-es="Confirmado">Confirmed</span></div>
+      </div>
+      <div class="mc cr fu d3">
+        <div class="mc-lbl" data-en="Critical Patients" data-es="Pacientes críticos">Critical Patients</div>
+        <div class="mc-val r">1</div>
+        <div class="mc-note" data-en="ICU · Johannesburg, South Africa" data-es="UCI · Johannesburgo, Sudáfrica">ICU · Johannesburg, South Africa</div>
+        <div class="mc-badge"><span class="badge bc" data-en="Confirmed" data-es="Confirmado">Confirmed</span></div>
+      </div>
+      <div class="mc cb fu d4">
+        <div class="mc-lbl" data-en="Nationalities Aboard" data-es="Nacionalidades a bordo">Nationalities Aboard</div>
+        <div class="mc-val b">22</div>
+        <div class="mc-note" data-en="147 people total" data-es="147 personas en total">147 people total</div>
+        <div class="mc-badge"><span class="badge bo" data-en="WHO Data" data-es="Datos OMS">WHO Data</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== MAP SECTION — RIGHT AFTER METRICS ===== -->
+<section id="map-section">
+  <div class="wrap">
+    <div class="map-sec-head fu">
+      <div>
+        <p class="sec-lbl" style="color:var(--blue);" data-en="Geographic Distribution" data-es="Distribución geográfica">Geographic Distribution</p>
+        <h2 class="sec-title" style="margin-bottom:0;" data-en="Outbreak <span style='color:var(--red)'>Map</span>" data-es="Mapa del <span style='color:var(--red)'>Brote</span>">Outbreak <span style="color:var(--red)">Map</span></h2>
+      </div>
+      <div class="map-toggle">
+        <button class="tbtn on" id="btn2d" onclick="switchMap('2d')" data-en="2D Map" data-es="Mapa 2D">2D Map</button>
+        <button class="tbtn"    id="btn3d" onclick="switchMap('3d')" data-en="3D Globe" data-es="Globo 3D">3D Globe</button>
+      </div>
+    </div>
+
+    <div class="map-wrap fu d1">
+      <!-- 2D Leaflet -->
+      <div id="map2d"></div>
+      <!-- 3D Globe -->
+      <div id="map3d">
+        <div class="g-panel" id="g-panel">
+          <button class="g-close" onclick="closePanel()">✕</button>
+          <div class="g-ctry" id="g-ctry">—</div>
+          <div class="g-reg"  id="g-reg">—</div>
+          <div class="g-row"><span class="g-lbl" data-en="Role" data-es="Función">Role</span><span class="g-val" id="g-role">—</span></div>
+          <div class="g-row"><span class="g-lbl" data-en="Details" data-es="Detalles">Details</span><span class="g-val" id="g-detail" style="font-size:.72rem;white-space:normal;text-align:right;max-width:140px;">—</span></div>
+        </div>
+        <div class="globe-hint" data-en="Drag to rotate · Click markers for details" data-es="Arrastra para rotar · Clic para detalles">Drag to rotate · Click markers for details</div>
+      </div>
+    </div>
+
+    <div class="map-legend fu d2">
+      <div class="leg-i"><div class="leg-d" style="background:#e63946;"></div><span data-en="Probable origin of contagion (Argentina)" data-es="Origen probable del contagio (Argentina)">Probable origin of contagion (Argentina)</span></div>
+      <div class="leg-i"><div class="leg-d" style="background:#f4a261;"></div><span data-en="Ship previously anchored (Cape Verde)" data-es="Barco fondeado anteriormente (Cabo Verde)">Ship previously anchored (Cape Verde)</span></div>
+      <div class="leg-i"><div class="leg-d" style="background:#4895ef;"></div><span data-en="Current destination (Tenerife)" data-es="Destino actual (Tenerife)">Current destination (Tenerife)</span></div>
+      <div class="leg-i"><div class="leg-d" style="background:#e63946;border:2px solid #fff;"></div><span data-en="1 critical patient (Johannesburg)" data-es="1 paciente crítico (Johannesburgo)">1 critical patient (Johannesburg)</span></div>
+      <div class="leg-i"><div class="leg-d" style="background:#9b72cf;"></div><span data-en="Planned quarantine Spain (Madrid)" data-es="Cuarentena España prevista (Madrid)">Planned quarantine Spain (Madrid)</span></div>
+    </div>
+
+    <div class="route-info fu d3">
+      <div class="ri">
+        <div class="ri-lbl" data-en="Ship Route" data-es="Ruta del barco">Ship Route</div>
+        <div class="ri-val" data-en="Argentina → Atlantic → Cape Verde → Tenerife" data-es="Argentina → Atlántico → Cabo Verde → Tenerife">Argentina → Atlantic → Cape Verde → Tenerife</div>
+        <div class="ri-sub"><span class="badge bc" data-en="Confirmed" data-es="Confirmado">Confirmed</span></div>
+      </div>
+      <div class="ri">
+        <div class="ri-lbl" data-en="Hospitalized Patient" data-es="Paciente hospitalizado">Hospitalized Patient</div>
+        <div class="ri-val" data-en="Johannesburg, South Africa" data-es="Johannesburgo, Sudáfrica">Johannesburg, South Africa</div>
+        <div class="ri-sub" style="font-size:.73rem;color:var(--sub);" data-en="1 patient in critical condition — ICU" data-es="1 paciente en estado crítico — UCI">1 patient in critical condition — ICU</div>
+      </div>
+      <div class="ri">
+        <div class="ri-lbl" data-en="Spanish Nationals Quarantine" data-es="Cuarentena españoles">Spanish Nationals Quarantine</div>
+        <div class="ri-val" data-en="Hospital Gómez Ulla, Madrid" data-es="Hospital Gómez Ulla, Madrid">Hospital Gómez Ulla, Madrid</div>
+        <div class="ri-sub"><span class="badge bs" data-en="Spain Health Data" data-es="Datos Sanidad España">Spain Health Data</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AD SLOT #1 -->
+<div class="wrap"><div class="ad ad-h"><!-- AdSense: Leaderboard 728×90 --></div></div>
+
+<!-- ===== QUICK FACTS ===== -->
+<section id="facts">
+  <div class="wrap">
+    <div class="fu">
+      <p class="sec-lbl" style="color:var(--red);" data-en="Quick summary" data-es="Resumen rápido">Quick summary</p>
+      <h2 class="sec-title" data-en="What We Know" data-es="Lo que sabemos">What We Know</h2>
+      <p class="sec-sub" data-en="Verified data cross-referenced with official sources as of May 8, 2026." data-es="Datos verificados con fuentes oficiales a 8 de mayo de 2026.">Verified data cross-referenced with official sources as of May 8, 2026.</p>
+    </div>
+    <div class="facts-grid">
+      <div class="fc fu d1">
+        <div class="fc-icon">🦠</div>
+        <div class="fc-lbl" data-en="Total cases" data-es="Total de casos">Total cases</div>
+        <div class="fc-val r">8</div>
+        <div class="fc-desc" data-en="5 lab-confirmed as Andes hantavirus. 3 additional cases under investigation as suspected." data-es="5 confirmados por laboratorio como hantavirus variante Andes. 3 casos sospechosos bajo investigación.">5 lab-confirmed as Andes hantavirus. 3 additional cases under investigation as suspected.</div>
+        <span class="badge bc" data-en="Confirmed" data-es="Confirmado">Confirmed</span>
+      </div>
+      <div class="fc fu d2">
+        <div class="fc-icon">💀</div>
+        <div class="fc-lbl" data-en="Deaths" data-es="Fallecidos">Deaths</div>
+        <div class="fc-val r">3</div>
+        <div class="fc-desc" data-en="Three confirmed fatalities. One patient in critical condition admitted to Johannesburg ICU." data-es="Tres fallecimientos confirmados. Un paciente en estado crítico ingresado en la UCI de Johannesburgo.">Three confirmed fatalities. One patient in critical condition admitted to Johannesburg ICU.</div>
+        <span class="badge bc" data-en="Confirmed" data-es="Confirmado">Confirmed</span>
+      </div>
+      <div class="fc fu d3">
+        <div class="fc-icon">🚢</div>
+        <div class="fc-lbl" data-en="Ship status" data-es="Estado del barco">Ship status</div>
+        <div class="fc-val" style="font-size:1rem;font-weight:800;line-height:1.3;" data-en="En route to Tenerife" data-es="En ruta a Tenerife">En route to Tenerife</div>
+        <div class="fc-desc" data-en="MV Hondius, previously anchored near Cape Verde, sails to Canary Islands under emergency health protocols. No free disembarkation." data-es="El MV Hondius, antes fondeado frente a Cabo Verde, navega hacia Canarias bajo protocolos sanitarios de emergencia. Sin desembarco libre.">MV Hondius, previously anchored near Cape Verde, sails to Canary Islands under emergency health protocols. No free disembarkation.</div>
+        <span class="badge bc" data-en="Confirmed" data-es="Confirmado">Confirmed</span>
+      </div>
+      <div class="fc fu d1">
+        <div class="fc-icon">🌍</div>
+        <div class="fc-lbl" data-en="Countries involved" data-es="Países implicados">Countries involved</div>
+        <div class="fc-val t">22</div>
+        <div class="fc-desc" data-en="Nationalities aboard. UK, Netherlands, Spain and other European nations are coordinating the international health response." data-es="Nacionalidades a bordo. Reino Unido, Países Bajos, España y otros países europeos coordinan la respuesta sanitaria.">Nationalities aboard. UK, Netherlands, Spain and other European nations are coordinating the international health response.</div>
+        <span class="badge bo" data-en="WHO Data" data-es="Datos OMS">WHO Data</span>
+      </div>
+      <div class="fc fu d2">
+        <div class="fc-icon">🇪🇸</div>
+        <div class="fc-lbl" data-en="Risk for Spain" data-es="Riesgo para España">Risk for Spain</div>
+        <div class="fc-val t" style="font-size:1rem;font-weight:800;line-height:1.3;" data-en="Extremely low" data-es="Extremadamente bajo">Extremely low</div>
+        <div class="fc-desc" data-en="14 Spanish nationals aboard. None presenting symptoms. Preventive quarantine planned at Hospital Gómez Ulla, Madrid." data-es="14 ciudadanos españoles a bordo. Ninguno con síntomas. Cuarentena preventiva prevista en el Hospital Gómez Ulla, Madrid.">14 Spanish nationals aboard. None presenting symptoms. Preventive quarantine planned at Hospital Gómez Ulla, Madrid.</div>
+        <span class="badge bs" data-en="Spain Health Data" data-es="Datos Sanidad España">Spain Health Data</span>
+      </div>
+      <div class="fc fu d3">
+        <div class="fc-icon">🔬</div>
+        <div class="fc-lbl" data-en="Probable origin" data-es="Hipótesis de origen">Probable origin</div>
+        <div class="fc-val a" style="font-size:1rem;font-weight:800;line-height:1.3;" data-en="Possibly Argentina" data-es="Posiblemente Argentina">Possibly Argentina</div>
+        <div class="fc-desc" data-en="WHO believes exposure likely occurred before embarkation, possibly in Argentina. The Andes strain is endemic in the Southern Cone." data-es="La OMS cree probable que la exposición ocurriera antes del embarque, posiblemente en Argentina. La cepa Andes es endémica en el Cono Sur.">WHO believes exposure likely occurred before embarkation, possibly in Argentina. The Andes strain is endemic in the Southern Cone.</div>
+        <span class="badge bi" data-en="Under Investigation" data-es="Investigación en curso">Under Investigation</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CURRENT SITUATION ===== -->
+<section id="situation">
+  <div class="wrap">
+    <div class="fu">
+      <p class="sec-lbl" style="color:var(--amber);" data-en="Current Situation" data-es="Situación actual">Current Situation</p>
+      <h2 class="sec-title" data-en="The Outbreak in Detail" data-es="El brote en detalle">The Outbreak in Detail</h2>
+    </div>
+    <div class="article fu d1">
+      <p class="lead" id="sit-lead">The MV Hondius, a polar expedition cruise ship, became the focal point of one of the most geographically complex hantavirus outbreaks in recent years — a shipborne cluster spanning 22 nationalities, now heading toward European shores under strict medical supervision.</p>
+      <p id="sit-p1">As of May 8, 2026, the vessel is navigating toward the <strong>Canary Islands</strong> after remaining anchored near Cape Verde while international health authorities coordinated their response. There are <strong>147 people aboard — passengers and crew</strong> — from at least <strong>22 different nationalities</strong>.</p>
+      <div class="callout red" id="sit-box1"><strong>WHO-confirmed outbreak data:</strong> 8 total cases identified — 5 confirmed by laboratory as Andes hantavirus, 3 under investigation as suspected cases. Three confirmed deaths. One patient in critical condition remains hospitalized in Johannesburg, South Africa. Remaining affected individuals present mild symptoms and are under medical monitoring.</div>
+      <p id="sit-p2">Among the people aboard are <strong>14 Spanish nationals</strong>. Spain's Ministry of Health has confirmed that <strong>none of them are presenting symptoms</strong> as of this date. Spain is working in coordination with WHO, the United Kingdom, the Netherlands and other European countries to manage the repatriation of their respective nationals.</p>
+      <p id="sit-p3">Passengers will not disembark freely in Tenerife. Under the activated protocols, <strong>each country will receive its citizens under preventive quarantine</strong>. For Spain, the designated facility is <strong>Hospital Gómez Ulla in Madrid</strong>, a Ministry of Defence hospital with certified expertise in high biological-risk case management.</p>
+      <div class="callout" id="sit-box2"><strong>Origin hypothesis (under investigation):</strong> The World Health Organization considers it likely that exposure to the virus occurred <em>before boarding</em>, possibly during land-based activities in Argentina or neighbouring areas of the Southern Cone. The Andes strain of hantavirus is endemic in that region and has the longest incubation period of any known variant — up to 45 days.</div>
+      <p id="sit-p4">The WHO has explicitly warned that, <strong>given the incubation period of up to 45 days</strong>, new cases could be identified among passengers and crew over the coming weeks — even among individuals currently presenting no symptoms whatsoever. This makes the monitoring of all 147 people aboard an international health priority.</p>
+      <div class="callout teal" id="sit-box3"><strong>Global risk assessment:</strong> WHO classifies the global health risk associated with this outbreak as <em>"low"</em>. Spain's Ministry of Health agrees, rating the risk for the Spanish population as <em>"extremely low"</em>. Authorities explicitly rule out the possibility of a COVID-19-style pandemic from this event.</div>
+    </div>
+  </div>
+</section>
+
+<!-- AD SLOT #2 -->
+<div class="wrap"><div class="ad ad-h"><!-- AdSense: Leaderboard 728×90 --></div></div>
+
+<!-- ===== TRANSMISSION ===== -->
+<section id="transmission">
+  <div class="wrap">
+    <div class="fu">
+      <p class="sec-lbl" style="color:var(--teal);" data-en="Science of the Outbreak" data-es="Ciencia del brote">Science of the Outbreak</p>
+      <h2 class="sec-title" data-en="How Hantavirus is Transmitted" data-es="Cómo se transmite el Hantavirus">How Hantavirus is Transmitted</h2>
+      <p class="sec-sub" data-en="What is known — and what is not yet known — about the Andes strain and its transmission routes." data-es="Todo lo que se sabe — y lo que aún no se sabe — sobre la cepa Andes y sus vías de transmisión.">What is known — and what is not yet known — about the Andes strain and its transmission routes.</p>
+    </div>
+    <div class="trans-grid fu d1">
+      <div class="tc">
+        <div class="tc-icon">🐭</div>
+        <div class="tc-title" data-en="Primary transmission routes <span class='badge bc'>Confirmed</span>" data-es="Vías de transmisión principales <span class='badge bc'>Confirmado</span>">Primary transmission routes <span class="badge bc">Confirmed</span></div>
+        <div class="tc-body">
+          <ul>
+            <li><strong data-en="Inhalation" data-es="Inhalación">Inhalation</strong> <span data-en="of dust contaminated with infected rodent urine, droppings or saliva (primary route)." data-es="de polvo contaminado con orina, excrementos o saliva de roedores infectados (vía principal).">of dust contaminated with infected rodent urine, droppings or saliva (primary route).</span></li>
+            <li><strong data-en="Direct contact" data-es="Contacto directo">Direct contact</strong> <span data-en="with infected rodents or their nesting materials." data-es="con roedores infectados o sus nidos.">with infected rodents or their nesting materials.</span></li>
+            <li><strong data-en="Rodent bite" data-es="Mordedura">Rodent bite</strong> <span data-en="from a carrier of the virus." data-es="de un roedor portador.">from a carrier of the virus.</span></li>
+            <li><strong data-en="Ingestion" data-es="Ingestión">Ingestion</strong> <span data-en="of food contaminated with rodent excreta (less common)." data-es="de alimentos contaminados (menos frecuente).">of food contaminated with rodent excreta (less common).</span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="tc">
+        <div class="tc-icon">👥</div>
+        <div class="tc-title" data-en="Person-to-person — Andes strain <span class='badge bi'>Under investigation</span>" data-es="Persona a persona — cepa Andes <span class='badge bi'>Investigación en curso</span>">Person-to-person — Andes strain <span class="badge bi">Under investigation</span></div>
+        <div class="tc-body">
+          <p data-en="The Andes strain is the <strong>only known hantavirus variant</strong> with documented human-to-human transmission. However, this route is considered <strong>rare</strong> and requires close, prolonged contact with an actively infected person." data-es="La cepa Andes es la <strong>única variante</strong> con transmisión humano a humano documentada. Esta vía es <strong>rara</strong> y requiere contacto estrecho y prolongado con un enfermo activo.">The Andes strain is the <strong>only known hantavirus variant</strong> with documented human-to-human transmission. However, this route is considered <strong>rare</strong> and requires close, prolonged contact with an actively infected person.</p>
+          <br>
+          <p data-en="WHO does not consider there to be a meaningful transmission risk to the general public under the protocols currently in place." data-es="La OMS no considera que exista riesgo de transmisión para la población general con los protocolos vigentes.">WHO does not consider there to be a meaningful transmission risk to the general public under the protocols currently in place.</p>
+        </div>
+      </div>
+      <div class="tc">
+        <div class="tc-icon">✅</div>
+        <div class="tc-title" data-en="What does NOT transmit the virus <span class='badge bc'>Confirmed</span>" data-es="Qué NO transmite el virus <span class='badge bc'>Confirmado</span>">What does NOT transmit the virus <span class="badge bc">Confirmed</span></div>
+        <div class="tc-body">
+          <ul>
+            <li data-en="Casual contact (handshakes, touching surfaces)." data-es="Contacto casual (apretones de manos, superficies).">Casual contact (handshakes, touching surfaces).</li>
+            <li data-en="Insect bites — no vector insect involved." data-es="Picaduras de insectos — no hay vector insecto.">Insect bites — no vector insect involved.</li>
+            <li data-en="Hygienically prepared food or water." data-es="Alimentos o agua preparados higiénicamente.">Hygienically prepared food or water.</li>
+            <li data-en="Long-range airborne transmission (unlike COVID-19)." data-es="Transmisión aérea a larga distancia (distinto al COVID-19).">Long-range airborne transmission (unlike COVID-19).</li>
+          </ul>
+        </div>
+      </div>
+      <div class="tc">
+        <div class="tc-icon">🏥</div>
+        <div class="tc-title" data-en="Treatment &amp; vaccine <span class='badge bc'>Confirmed</span>" data-es="Tratamiento y vacuna <span class='badge bc'>Confirmado</span>">Treatment &amp; vaccine <span class="badge bc">Confirmed</span></div>
+        <div class="tc-body">
+          <p data-en="No widely available vaccine or approved antiviral treatment exists in Europe or the USA for hantavirus. Treatment is <strong>supportive intensive care</strong>: oxygenation, blood pressure control and ICU management. Early detection is the single most important survival factor." data-es="No existe vacuna ampliamente disponible ni tratamiento antiviral aprobado en Europa o EE.UU. El tratamiento es <strong>soporte intensivo</strong>: oxigenación, control de presión y UCI. La detección precoz es el factor más determinante.">No widely available vaccine or approved antiviral treatment exists in Europe or the USA for hantavirus. Treatment is <strong>supportive intensive care</strong>: oxygenation, blood pressure control and ICU management. Early detection is the single most important survival factor.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Incubation bar -->
+    <div class="incub-box fu d2">
+      <div class="incub-title" data-en="Incubation Period — Andes Hantavirus Strain" data-es="Período de Incubación — Variante Andes del Hantavirus">Incubation Period — Andes Hantavirus Strain</div>
+      <div class="incub-line"><div class="incub-fill" id="incub-fill"></div></div>
+      <div class="incub-marks">
+        <div class="im"><strong data-en="Day 1" data-es="Día 1">Day 1</strong><span data-en="Exposure" data-es="Exposición">Exposure</span></div>
+        <div class="im"><strong data-en="Day 9–14" data-es="Día 9–14">Day 9–14</strong><span data-en="Early symptoms" data-es="Síntomas iniciales">Early symptoms</span></div>
+        <div class="im"><strong data-en="Day 21" data-es="Día 21">Day 21</strong><span data-en="Critical phase" data-es="Fase crítica">Critical phase</span></div>
+        <div class="im"><strong data-en="Day 45" data-es="Día 45">Day 45</strong><span data-en="Max. incubation" data-es="Máx. incubación">Max. incubation</span></div>
+      </div>
+      <div class="incub-note">
+        <span class="badge bo" style="margin-right:8px;" data-en="WHO Data" data-es="Datos OMS">WHO Data</span>
+        <span data-en="The Andes strain has one of the longest incubation periods of any known hantavirus variant. This means exposed individuals may develop symptoms up to 45 days after initial contact, making prolonged follow-up of all vessel contacts essential." data-es="La cepa Andes tiene uno de los períodos de incubación más largos. Las personas expuestas pueden desarrollar síntomas hasta 45 días después del contacto, lo que hace imprescindible el seguimiento prolongado de todos los contactos.">The Andes strain has one of the longest incubation periods of any known hantavirus variant. This means exposed individuals may develop symptoms up to 45 days after initial contact, making prolonged follow-up of all vessel contacts essential.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== GLOBAL CONTEXT ===== -->
+<section id="context">
+  <div class="wrap">
+    <div class="fu">
+      <p class="sec-lbl" style="color:var(--violet);" data-en="Epidemiological Context" data-es="Contexto epidemiológico">Epidemiological Context</p>
+      <h2 class="sec-title" data-en="Hantavirus Around the World" data-es="El Hantavirus en el mundo">Hantavirus Around the World</h2>
+    </div>
+    <div class="ctx-grid fu d1">
+      <div>
+        <p style="font-size:.88rem;color:var(--sub);line-height:1.78;margin-bottom:16px;" data-en="Hantavirus is not a new pathogen. It circulates endemically in wild rodent populations across multiple world regions. What makes the MV Hondius outbreak singular is its transnational character, the specific strain involved, and the vector of dispersion — a cruise ship carrying passengers from 22 countries." data-es="El hantavirus no es un virus nuevo. Circula endémicamente en roedores en múltiples regiones. Lo que hace singular el brote del MV Hondius es su carácter transnacional, la cepa implicada y el vector: un crucero con pasajeros de 22 países.">Hantavirus is not a new pathogen. It circulates endemically in wild rodent populations across multiple world regions. What makes the MV Hondius outbreak singular is its transnational character, the specific strain involved, and the vector of dispersion — a cruise ship carrying passengers from 22 countries.</p>
+        <div class="callout" style="margin-bottom:18px;" data-en="<strong>Strains of greatest epidemiological concern:</strong> Andes (South America — only strain with documented H2H transmission) · Sin Nombre (USA, ~36% fatality) · Puumala (Europe, low fatality) · Seoul (global distribution via domestic rats)." data-es="<strong>Cepas que más preocupan:</strong> Andes (América del Sur — única con transmisión H2H documentada) · Sin Nombre (EE.UU., ~36% mortalidad) · Puumala (Europa, mortalidad baja) · Seoul (distribución global)."><strong>Strains of greatest epidemiological concern:</strong> Andes (South America — only strain with documented H2H transmission) · Sin Nombre (USA, ~36% fatality) · Puumala (Europe, low fatality) · Seoul (global distribution via domestic rats).</div>
+        <p style="font-size:.88rem;color:var(--sub);line-height:1.78;" data-en="Spain has <strong>never recorded autochthonous Andes strain cases</strong>. Sporadic cases of the Puumala variant — far less lethal — have been documented in other parts of Europe." data-es="España <strong>nunca ha registrado casos autóctonos</strong> de la variante Andes. Casos esporádicos de la variante Puumala —de mucho menor mortalidad— se han documentado en otras partes de Europa.">Spain has <strong>never recorded autochthonous Andes strain cases</strong>. Sporadic cases of the Puumala variant — far less lethal — have been documented in other parts of Europe.</p>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th data-en="Country / Region" data-es="País / Región">Country / Region</th>
+              <th data-en="Main Strain" data-es="Cepa principal">Main Strain</th>
+              <th data-en="HPS Fatality" data-es="Mortalidad SPH">HPS Fatality</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td class="bold">Argentina</td><td>Andes</td><td class="red">~35–40%</td></tr>
+            <tr><td class="bold">Chile</td><td>Andes</td><td class="red">~35–40%</td></tr>
+            <tr><td class="bold">Bolivia</td><td>Laguna Negra / Andes</td><td class="red">~30–38%</td></tr>
+            <tr><td class="bold">Paraguay</td><td>Laguna Negra</td><td class="red">~25–35%</td></tr>
+            <tr><td class="bold">Brazil</td><td>Juquitiba / Araraquara</td><td class="red">~40–50%</td></tr>
+            <tr><td class="bold">United States</td><td>Sin Nombre</td><td class="red">~36%</td></tr>
+            <tr><td class="bold">Europe (Central)</td><td>Puumala / Dobrava</td><td class="teal">1–5%</td></tr>
+          </tbody>
+        </table>
+        <p style="font-size:.7rem;color:var(--muted);margin-top:8px;" data-en="Source: PAHO, CDC, ECDC. Reference data. Fatality varies with hospital capacity and early detection." data-es="Fuente: PAHO/OPS, CDC, ECDC. Datos de referencia. La mortalidad varía según capacidad hospitalaria y detección precoz.">Source: PAHO, CDC, ECDC. Reference data. Fatality varies with hospital capacity and early detection.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AD SLOT #3 -->
+<div class="wrap"><div class="ad ad-h"><!-- AdSense: Leaderboard 728×90 --></div></div>
+
+<!-- ===== RISK SECTION ===== -->
+<section id="risk">
+  <div class="wrap">
+    <div class="fu">
+      <p class="sec-lbl" style="color:var(--teal);" data-en="Risk Assessment" data-es="Evaluación del riesgo">Risk Assessment</p>
+      <h2 class="sec-title" data-en="What Risk Does This Pose?" data-es="¿Qué riesgo supone esto?">What Risk Does This Pose?</h2>
+    </div>
+    <div class="risk-banner fu d1">
+      <div class="risk-icon">🛡️</div>
+      <div>
+        <h3 data-en="Risk for Spain &amp; Europe: Extremely Low" data-es="Riesgo para España y Europa: Extremadamente bajo">Risk for Spain &amp; Europe: Extremely Low</h3>
+        <p data-en="Spain's Ministry of Health has confirmed the risk to the Spanish population is <strong>extremely low</strong>. The 14 Spanish nationals aboard present no symptoms as of May 8, 2026. They will be repatriated to Hospital Gómez Ulla in Madrid under preventive quarantine. Spain has never recorded autochthonous Andes hantavirus cases. The WHO classifies global health risk as <strong>'low'</strong> and explicitly rules out a pandemic scenario." data-es="El Ministerio de Sanidad ha confirmado que el riesgo para España es <strong>extremadamente bajo</strong>. Los 14 españoles a bordo no presentan síntomas. Serán repatriados al Hospital Gómez Ulla bajo cuarentena preventiva. La OMS clasifica el riesgo global como <strong>'bajo'</strong> y descarta un escenario pandémico.">Spain's Ministry of Health has confirmed the risk to the Spanish population is <strong>extremely low</strong>. The 14 Spanish nationals aboard present no symptoms as of May 8, 2026. They will be repatriated to Hospital Gómez Ulla in Madrid under preventive quarantine. Spain has never recorded autochthonous Andes hantavirus cases. The WHO classifies global health risk as <strong>'low'</strong> and explicitly rules out a pandemic scenario.</p>
+      </div>
+    </div>
+    <div class="myth-grid fu d2">
+      <div class="myth false">
+        <div class="myth-head"><div class="myth-icon">❌</div><div class="myth-title" data-en="FALSE: 'Hantavirus will spread like COVID-19'" data-es="FALSO: 'El hantavirus se extenderá como el COVID'">FALSE: "Hantavirus will spread like COVID-19"</div></div>
+        <div class="myth-body" data-en="Hantavirus is not airborne over distance and does not spread casually between people. It lacks the transmissibility characteristics of SARS-CoV-2. Health authorities explicitly rule out a pandemic scenario." data-es="El hantavirus no es aéreo a larga distancia y no se contagia casualmente entre personas. Las autoridades sanitarias descartan explícitamente un escenario pandémico.">Hantavirus is not airborne over distance and does not spread casually between people. It lacks the transmissibility characteristics of SARS-CoV-2. Health authorities explicitly rule out a pandemic scenario.</div>
+      </div>
+      <div class="myth true">
+        <div class="myth-head"><div class="myth-icon">✅</div><div class="myth-title" data-en="TRUE: Spaniards will disembark under quarantine" data-es="CIERTO: Los españoles desembarcarán bajo cuarentena">TRUE: Spaniards will disembark under quarantine</div></div>
+        <div class="myth-body" data-en="Confirmed: the 14 Spanish nationals will not have free access to Tenerife. They will be transferred directly to Hospital Gómez Ulla in Madrid for preventive quarantine and medical monitoring during the full incubation period." data-es="Confirmado: los 14 españoles no tendrán acceso libre a Tenerife. Serán trasladados al Hospital Gómez Ulla en Madrid para cuarentena preventiva durante el período de incubación completo.">Confirmed: the 14 Spanish nationals will not have free access to Tenerife. They will be transferred directly to Hospital Gómez Ulla in Madrid for preventive quarantine and medical monitoring during the full incubation period.</div>
+      </div>
+      <div class="myth false">
+        <div class="myth-head"><div class="myth-icon">❌</div><div class="myth-title" data-en="FALSE: 'The virus spreads via surface contact'" data-es="FALSO: 'El virus se contagia tocando superficies'">FALSE: "The virus spreads via surface contact"</div></div>
+        <div class="myth-body" data-en="Hantavirus does not spread through handshakes, touching surfaces or simply sharing a space with an infected person. It requires exposure to infected rodent secretions or, for the Andes strain, very close and prolonged contact." data-es="El hantavirus no se contagia por superficies ni por estar en el mismo espacio que un infectado. Requiere exposición a secreciones de roedores infectados o, en la cepa Andes, contacto muy estrecho y prolongado.">Hantavirus does not spread through handshakes, touching surfaces or simply sharing a space with an infected person. It requires exposure to infected rodent secretions or, for the Andes strain, very close and prolonged contact.</div>
+      </div>
+      <div class="myth true">
+        <div class="myth-head"><div class="myth-icon">✅</div><div class="myth-title" data-en="TRUE: Andes strain can spread between people" data-es="CIERTO: La cepa Andes puede transmitirse entre personas">TRUE: Andes strain can spread between people</div></div>
+        <div class="myth-body" data-en="Unlike other hantavirus strains, Andes is the only one with documented human-to-human transmission. However, this remains rare, requires prolonged close contact, and does not imply any risk to the general public under the protocols in place." data-es="A diferencia de otras cepas, la Andes es la única con transmisión humano a humano documentada. Es rara, requiere contacto estrecho prolongado, y no implica riesgo para la población general con los protocolos vigentes.">Unlike other hantavirus strains, Andes is the only one with documented human-to-human transmission. However, this remains rare, requires prolonged close contact, and does not imply any risk to the general public under the protocols in place.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== TIMELINE ===== -->
+<section id="timeline">
+  <div class="wrap">
+    <div class="fu">
+      <p class="sec-lbl" style="color:var(--amber);" data-en="Chronology" data-es="Cronología">Chronology</p>
+      <h2 class="sec-title" data-en="Outbreak Timeline" data-es="Línea temporal del brote">Outbreak Timeline</h2>
+      <p class="sec-sub" data-en="Evolution of the outbreak from the cruise's departure to the latest available update." data-es="Evolución del brote desde la salida del crucero hasta la última actualización disponible.">Evolution of the outbreak from the cruise's departure to the latest available update.</p>
+    </div>
+    <div class="tl fu d1">
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-date"><span data-en="Weeks prior · Approx. date" data-es="Semanas previas · Fecha aproximada">Weeks prior · Approx. date</span><span class="badge bi" data-en="Under Investigation" data-es="Investigación en curso">Under Investigation</span></div>
+        <div class="tl-title" data-en="Cruise departs · Probable exposure in Argentina" data-es="Inicio del crucero · Exposición probable en Argentina">Cruise departs · Probable exposure in Argentina</div>
+        <div class="tl-body" data-en="MV Hondius sets off on its polar expedition. WHO is investigating whether original exposure to hantavirus occurred on land — possibly in Argentina or surrounding Southern Cone regions — before some passengers boarded." data-es="El MV Hondius parte en su expedición polar. La OMS investiga si la exposición original al hantavirus ocurrió en tierra, posiblemente en Argentina, antes del embarque.">MV Hondius sets off on its polar expedition. WHO is investigating whether original exposure to hantavirus occurred on land — possibly in Argentina or surrounding Southern Cone regions — before some passengers boarded.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot a"></div>
+        <div class="tl-date"><span data-en="Prior weeks · Confirmed period" data-es="Semanas previas · Período confirmado">Prior weeks · Confirmed period</span><span class="badge bc" data-en="Confirmed" data-es="Confirmado">Confirmed</span></div>
+        <div class="tl-title" data-en="First passengers develop symptoms" data-es="Primeros pasajeros presentan síntomas">First passengers develop symptoms</div>
+        <div class="tl-body" data-en="Several passengers develop symptoms consistent with hantavirus: high fever, severe myalgia and respiratory distress. Severity of presentation alerts the ship's medical staff." data-es="Varios pasajeros desarrollan síntomas compatibles con hantavirus: fiebre alta, dolor muscular severo y afectación respiratoria. La gravedad alerta al equipo médico.">Several passengers develop symptoms consistent with hantavirus: high fever, severe myalgia and respiratory distress. Severity of presentation alerts the ship's medical staff.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot r"></div>
+        <div class="tl-date"><span data-en="Prior weeks" data-es="Semanas previas">Prior weeks</span><span class="badge bc" data-en="Confirmed" data-es="Confirmado">Confirmed</span></div>
+        <div class="tl-title" data-en="Medical evacuation to Johannesburg" data-es="Evacuación médica a Johannesburgo">Medical evacuation to Johannesburg</div>
+        <div class="tl-body" data-en="A passenger in critical condition is evacuated from the ship and transferred to a hospital in Johannesburg, South Africa, where they remain in the ICU. This evacuation triggers an international health alert." data-es="Un pasajero en estado crítico es evacuado y trasladado a un hospital en Johannesburgo, donde permanece en UCI. Esta evacuación activa la alerta sanitaria internacional.">A passenger in critical condition is evacuated from the ship and transferred to a hospital in Johannesburg, South Africa, where they remain in the ICU. This evacuation triggers an international health alert.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot a"></div>
+        <div class="tl-date"><span data-en="Prior weeks" data-es="Semanas previas">Prior weeks</span><span class="badge bo" data-en="WHO Data" data-es="Datos OMS">WHO Data</span></div>
+        <div class="tl-title" data-en="WHO notified · International contact tracing activated" data-es="Notificación a la OMS · Rastreo internacional activado">WHO notified · International contact tracing activated</div>
+        <div class="tl-body" data-en="Health authorities officially notify the World Health Organization. International contact tracing is activated. WHO recommends the ship anchor while the situation is assessed." data-es="Las autoridades sanitarias notifican oficialmente a la OMS. Se activa el rastreo internacional de contactos. La OMS recomienda fondear el barco mientras se evalúa la situación.">Health authorities officially notify the World Health Organization. International contact tracing is activated. WHO recommends the ship anchor while the situation is assessed.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot a"></div>
+        <div class="tl-date"><span data-en="Recent days" data-es="Días recientes">Recent days</span><span class="badge bc" data-en="Confirmed" data-es="Confirmado">Confirmed</span></div>
+        <div class="tl-title" data-en="MV Hondius anchors near Cape Verde" data-es="El MV Hondius fondea frente a Cabo Verde">MV Hondius anchors near Cape Verde</div>
+        <div class="tl-body" data-en="The vessel remains anchored in waters near Cape Verde as a precautionary measure while multiple countries coordinate the management of disembarkation and repatriation of their nationals." data-es="El barco permanece fondeado frente a Cabo Verde por precaución sanitaria mientras múltiples países coordinan la repatriación de sus ciudadanos.">The vessel remains anchored in waters near Cape Verde as a precautionary measure while multiple countries coordinate the management of disembarkation and repatriation of their nationals.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot r"></div>
+        <div class="tl-date"><span>May 7, 2026</span><span class="badge bc" data-en="Confirmed" data-es="Confirmado">Confirmed</span></div>
+        <div class="tl-title" data-en="3 deaths confirmed · 5 lab cases confirmed" data-es="3 fallecidos confirmados · 5 casos de laboratorio">3 deaths confirmed · 5 lab cases confirmed</div>
+        <div class="tl-body" data-en="WHO confirms three fatalities and five positive laboratory results for Andes hantavirus. Three additional cases remain under investigation. Total affected individuals: 8." data-es="La OMS confirma tres fallecimientos y cinco casos positivos por laboratorio para hantavirus variante Andes. Tres casos adicionales bajo investigación. Total afectados: 8.">WHO confirms three fatalities and five positive laboratory results for Andes hantavirus. Three additional cases remain under investigation. Total affected individuals: 8.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot t"></div>
+        <div class="tl-date"><span>May 8, 2026 — <span data-en="Latest update" data-es="Última actualización">Latest update</span></span><span class="badge bc" data-en="Confirmed" data-es="Confirmado">Confirmed</span></div>
+        <div class="tl-title" data-en="Ship sails to Tenerife under emergency protocols" data-es="El barco navega hacia Tenerife con protocolos de emergencia">Ship sails to Tenerife under emergency protocols</div>
+        <div class="tl-body" data-en="MV Hondius sets course for Tenerife, Canary Islands. Emergency sanitary protocols are activated. No free disembarkation. Spanish nationals to be transferred to Hospital Gómez Ulla, Madrid, under quarantine. None of the 14 Spanish aboard show symptoms." data-es="El MV Hondius pone rumbo a Tenerife. Se activan protocolos sanitarios de emergencia. Sin desembarco libre. Los españoles serán trasladados al Hospital Gómez Ulla, Madrid. Ningún español presenta síntomas.">MV Hondius sets course for Tenerife, Canary Islands. Emergency sanitary protocols are activated. No free disembarkation. Spanish nationals to be transferred to Hospital Gómez Ulla, Madrid, under quarantine. None of the 14 Spanish aboard show symptoms.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot pulse"></div>
+        <div class="tl-date"><span data-en="Coming weeks · Active surveillance" data-es="Próximas semanas · Vigilancia activa">Coming weeks · Active surveillance</span><span class="badge bi" data-en="Active monitoring" data-es="Vigilancia activa">Active monitoring</span></div>
+        <div class="tl-title" data-en="Maximum epidemiological surveillance period" data-es="Período de máxima vigilancia epidemiológica">Maximum epidemiological surveillance period</div>
+        <div class="tl-body" data-en="WHO warns new cases may emerge over the coming weeks due to the up-to-45-day incubation period. International tracing of all 147 vessel contacts remains ongoing." data-es="La OMS advierte que podrían aparecer nuevos casos durante las próximas semanas por el período de incubación de hasta 45 días. El rastreo internacional de los 147 contactos continúa.">WHO warns new cases may emerge over the coming weeks due to the up-to-45-day incubation period. International tracing of all 147 vessel contacts remains ongoing.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== DASHBOARD ===== -->
+<section id="dashboard">
+  <div class="wrap">
+    <div class="fu">
+      <p class="sec-lbl" style="color:var(--blue);" data-en="Data Panel" data-es="Panel de datos">Data Panel</p>
+      <h2 class="sec-title" data-en="Key Figures" data-es="Datos clave">Key Figures</h2>
+    </div>
+    <div class="dash-grid">
+      <div class="dc fu d1"><div class="dc-val r">8</div><div class="dc-lbl" data-en="Total Cases" data-es="Casos totales">Total Cases</div><div class="dc-badge"><span class="badge bc" data-en="5 lab-confirmed" data-es="5 confirmados lab">5 lab-confirmed</span></div></div>
+      <div class="dc fu d2"><div class="dc-val a">3</div><div class="dc-lbl" data-en="Deaths" data-es="Fallecidos">Deaths</div><div class="dc-badge"><span class="badge bc" data-en="Confirmed" data-es="Confirmado">Confirmed</span></div></div>
+      <div class="dc fu d3"><div class="dc-val r">37.5<span style="font-size:1.1rem;">%</span></div><div class="dc-lbl" data-en="Case Fatality Rate" data-es="Mortalidad del brote">Case Fatality Rate</div><div class="dc-badge"><span class="badge bi" data-en="3 of 8 cases" data-es="3 de 8 casos">3 of 8 cases</span></div></div>
+      <div class="dc fu d1"><div class="dc-val a">1</div><div class="dc-lbl" data-en="Critical Patient" data-es="Paciente crítico">Critical Patient</div><div class="dc-badge"><span class="badge bc" data-en="Johannesburg" data-es="Johannesburgo">Johannesburg</span></div></div>
+      <div class="dc fu d2"><div class="dc-val b">147</div><div class="dc-lbl" data-en="People Aboard" data-es="Personas a bordo">People Aboard</div><div class="dc-badge"><span class="badge bc" data-en="22 nationalities" data-es="22 nacionalidades">22 nationalities</span></div></div>
+      <div class="dc fu d3"><div class="dc-val t">45</div><div class="dc-lbl" data-en="Max. Incubation (days)" data-es="Incubación máx. (días)">Max. Incubation (days)</div><div class="dc-badge"><span class="badge bo" data-en="WHO Data" data-es="Datos OMS">WHO Data</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FAQ ===== -->
+<section id="faq">
+  <div class="wrap">
+    <div class="fu">
+      <p class="sec-lbl" style="color:var(--red);" data-en="Frequently Asked Questions" data-es="Preguntas frecuentes">Frequently Asked Questions</p>
+      <h2 class="sec-title" data-en="Everything You Need to Know" data-es="Todo lo que necesitas saber">Everything You Need to Know</h2>
+    </div>
+    <div class="faq-list fu d1" id="faq-list"></div>
+    <div class="ad ad-h" style="margin-top:28px;"><!-- AdSense: Leaderboard 728×90 --></div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="wrap">
+    <div class="disclaimer">
+      <strong data-en="Medical &amp; Editorial Disclaimer:" data-es="Aviso médico y editorial:">Medical &amp; Editorial Disclaimer:</strong>
+      <span data-en=" This page contains informational and journalistic content based exclusively on official WHO, Spain Ministry of Health and international media data. It does not constitute medical advice. If you have symptoms or believe you may have been exposed, contact your national health emergency services immediately. Do not self-medicate." data-es=" Esta página contiene información periodística basada en datos oficiales de la OMS, Sanidad España y medios internacionales de referencia. No constituye asesoramiento médico. Si tienes síntomas o crees haber estado expuesto, contacta con los servicios de emergencias sanitarias. No automediques."> This page contains informational and journalistic content based exclusively on official WHO, Spain Ministry of Health and international media data. It does not constitute medical advice. If you have symptoms or believe you may have been exposed, contact your national health emergency services immediately. Do not self-medicate.</span>
+    </div>
+    <div class="foot-grid">
+      <div class="fb">
+        <h3>HantaTracker — MV Hondius</h3>
+        <p data-en="Journalistic and scientific coverage of the hantavirus outbreak on polar cruise MV Hondius. Data verified against official sources: WHO, PAHO, CDC, Spain Ministry of Health." data-es="Cobertura periodística y científica del brote de hantavirus en el crucero polar MV Hondius. Datos contrastados con fuentes oficiales: OMS, PAHO, CDC, Sanidad España.">Journalistic and scientific coverage of the hantavirus outbreak on polar cruise MV Hondius. Data verified against official sources: WHO, PAHO, CDC, Spain Ministry of Health.</p>
+        <p class="manual-note" data-en="ℹ️ This information is updated manually by the HantaTracker editorial team. Data may not reflect changes in the last few hours. Last update: May 8, 2026." data-es="ℹ️ Esta información es actualizada manualmente por el equipo de redacción de HantaTracker. Los datos pueden no reflejar cambios de las últimas horas. Última actualización: 8 mayo 2026.">ℹ️ This information is updated manually by the HantaTracker editorial team. Data may not reflect changes in the last few hours. Last update: May 8, 2026.</p>
+      </div>
+      <div class="flc">
+        <h4 data-en="Official Sources" data-es="Fuentes oficiales">Official Sources</h4>
+        <ul>
+          <li><a href="#">WHO / OMS</a></li>
+          <li><a href="#">PAHO / OPS</a></li>
+          <li><a href="#">Spain Ministry of Health</a></li>
+          <li><a href="#">ECDC Europe</a></li>
+          <li><a href="#">Hospital Gómez Ulla</a></li>
+        </ul>
+      </div>
+      <div class="flc">
+        <h4 data-en="Legal" data-es="Legal">Legal</h4>
+        <ul>
+          <li><a href="#" data-en="Privacy Policy" data-es="Política de privacidad">Privacy Policy</a></li>
+          <li><a href="#" data-en="Cookie Policy" data-es="Política de cookies">Cookie Policy</a></li>
+          <li><a href="#" data-en="Terms of Use" data-es="Términos de uso">Terms of Use</a></li>
+          <li><a href="#" data-en="Methodology" data-es="Metodología">Methodology</a></li>
+          <li><a href="index.html" data-en="← Global Tracker" data-es="← Tracker global">← Global Tracker</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bot">
+      <p data-en="© 2026 HantaTracker. All rights reserved. Data updated regularly from official sources." data-es="© 2026 HantaTracker. Todos los derechos reservados. Datos actualizados regularmente desde fuentes oficiales.">© 2026 HantaTracker. All rights reserved. Data updated regularly from official sources.</p>
+      <p data-en="Built for public health awareness. Does not substitute official health authority guidance." data-es="Construido para la concienciación en salud pública. No sustituye a la información oficial de las autoridades sanitarias.">Built for public health awareness. Does not substitute official health authority guidance.</p>
+    </div>
+  </div>
+</footer>
+
+<!-- ===== SCRIPTS ===== -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.134.0/build/three.min.js"></script>
+
+<script>
+'use strict';
+
+// ============================================================
+//  GLOBE DATA — locations for the 3D globe
+// ============================================================
+const GLOBE_POINTS = [
+  { name:'Argentina', detail:'Probable origin of contagion', lat:-34.61, lng:-58.39, color:'#e63946', role:'Probable Origin' },
+  { name:'Cape Verde', detail:'MV Hondius previously anchored here', lat:15.12,  lng:-23.60, color:'#f4a261', role:'Ship Anchored' },
+  { name:'Tenerife, Spain', detail:'Current destination — no free disembarkation', lat:28.29,  lng:-16.62, color:'#4895ef', role:'Destination' },
+  { name:'MV Hondius (at sea)', detail:'147 people aboard — en route to Tenerife', lat:21.50,  lng:-20.50, color:'#4895ef', role:'Ship Position' },
+  { name:'Johannesburg, South Africa', detail:'1 critical patient in ICU', lat:-26.20,  lng:28.04, color:'#e63946', role:'ICU Patient' },
+  { name:'Madrid, Spain', detail:'Hospital Gómez Ulla — planned quarantine', lat:40.42,  lng:-3.70, color:'#9b72cf', role:'Quarantine' },
+];
+
+// ============================================================
+//  FAQ DATA
+// ============================================================
+const FAQS = {
+  en: [
+    { q:'Can hantavirus reach Spain through the cruise?', a:'The risk is extremely low according to Spain\'s Ministry of Health. The 14 Spanish nationals aboard present no symptoms and will be repatriated under strict preventive quarantine at Hospital Gómez Ulla in Madrid. There will be no free disembarkation in Tenerife. Hantavirus does not spread through casual contact or through the air in open spaces.' },
+    { q:'Does hantavirus spread between people?', a:'<strong>In most strains, no.</strong> However, the Andes variant — the strain involved in this outbreak — is the only one with documented human-to-human transmission. This route is <strong>rare</strong> and requires close, prolonged contact with an actively infected person. WHO does not consider there to be a public transmission risk under current protocols.' },
+    { q:'Could this become a pandemic like COVID-19?', a:'No. Spanish, European and WHO health authorities explicitly rule out this scenario. Hantavirus does not have the transmissibility of SARS-CoV-2. It does not spread through the air over distance, there is no insect vector, and its primary contagion route involves rodents. Global health risk is classified by WHO as "low".' },
+    { q:'Is it similar to COVID-19?', a:'Not in its transmission characteristics. COVID-19 is a coronavirus with high airborne human-to-human transmission. Hantavirus spreads primarily from rodents to humans. The Andes strain can transmit between people in limited circumstances, but its mechanisms and scale are radically different from SARS-CoV-2. Both are RNA viruses with no widely approved vaccine or specific antiviral treatment.' },
+    { q:'Is there a vaccine against hantavirus?', a:'No widely available or approved vaccine exists in Europe or the USA for hantavirus. Some specific vaccines against certain strains are available in China and South Korea. Research continues but no imminent solution exists for American strains like Andes.' },
+    { q:'What symptoms does hantavirus cause?', a:'<strong>Early phase (first days):</strong> sudden high fever, intense muscle pain (especially thighs and hips), extreme fatigue, headache, chills, nausea and vomiting.<br><br><strong>Critical phase (days 4–10):</strong> progressive respiratory difficulty that can advance rapidly to acute respiratory failure. This is the most dangerous phase of Hantavirus Pulmonary Syndrome (HPS).<br><br>If you have been in contact with wild rodents and develop these symptoms, seek urgent medical attention.' },
+    { q:'Why would a cruise ship have hantavirus?', a:'According to WHO\'s primary hypothesis, exposure did not occur on the ship but <em>before boarding</em>, possibly during land-based activities in Argentina or surrounding Southern Cone regions. The Andes strain has an incubation period of up to 45 days, meaning symptoms can appear weeks after initial exposure — already aboard the ship.' },
+  ],
+  es: [
+    { q:'¿Puede el hantavirus llegar a España con el crucero?', a:'El riesgo es extremadamente bajo según Sanidad España. Los 14 españoles a bordo no presentan síntomas y serán repatriados bajo cuarentena preventiva estricta en el Hospital Gómez Ulla de Madrid. No habrá desembarco libre en Tenerife. El hantavirus no se contagia por contacto casual ni por el aire en espacios abiertos.' },
+    { q:'¿El hantavirus se transmite entre humanos?', a:'<strong>En la mayoría de las cepas, no.</strong> Sin embargo, la variante Andes —la implicada en este brote— es la única con transmisión humano a humano documentada. Esta transmisión es <strong>rara</strong> y requiere contacto estrecho y prolongado con una persona infectada. La OMS no considera que exista riesgo de transmisión para la población general.' },
+    { q:'¿Podría convertirse en una pandemia como el COVID-19?', a:'No. Las autoridades sanitarias y la OMS descartan explícitamente este escenario. El hantavirus no tiene la transmisibilidad del SARS-CoV-2. No se contagia por el aire a distancia, no existe vector insecto, y su vía principal son los roedores. El riesgo global es clasificado por la OMS como "bajo".' },
+    { q:'¿Es parecido al COVID-19?', a:'No en sus características de transmisión. El COVID-19 es un coronavirus con alta transmisión aérea. El hantavirus se transmite principalmente de roedores a humanos. La cepa Andes puede transmitirse entre personas de forma muy limitada, pero sus mecanismos son radicalmente distintos al SARS-CoV-2.' },
+    { q:'¿Hay vacuna contra el hantavirus?', a:'No existe vacuna ampliamente disponible ni aprobada en Europa o EE.UU. Algunas vacunas específicas existen en China y Corea del Sur. La investigación continúa pero no hay solución inminente para cepas americanas como la Andes.' },
+    { q:'¿Qué síntomas produce el hantavirus?', a:'<strong>Fase inicial:</strong> fiebre alta brusca, dolor muscular intenso, fatiga extrema, cefalea, escalofríos, náuseas y vómitos.<br><br><strong>Fase crítica (días 4–10):</strong> dificultad respiratoria progresiva que puede avanzar hacia insuficiencia respiratoria aguda. Es la fase más peligrosa del Síndrome Pulmonar por Hantavirus (SPH).<br><br>Si has estado en contacto con roedores salvajes y desarrollas estos síntomas, acude urgentemente al médico.' },
+    { q:'¿Por qué puede haber hantavirus en un crucero?', a:'Según la hipótesis principal de la OMS, la exposición no ocurrió en el barco sino <em>antes del embarque</em>, posiblemente en Argentina. La cepa Andes tiene un período de incubación de hasta 45 días, lo que significa que los síntomas pueden aparecer semanas después de la exposición inicial, ya a bordo del barco.' },
+  ]
+};
+
+// ============================================================
+//  LANGUAGE TOGGLE
+// ============================================================
+let currentLang = 'en';
+
+function toggleLang() {
+  currentLang = currentLang === 'en' ? 'es' : 'en';
+  applyLang(currentLang);
+  const btn = document.getElementById('lang-btn');
+  btn.textContent = currentLang === 'en' ? 'ES' : 'EN';
+  btn.classList.toggle('active', currentLang === 'es');
+  renderFAQ(); // re-render FAQ in new language
+}
+
+function applyLang(lang) {
+  document.documentElement.lang = lang;
+  // Swap all elements with data-en / data-es attributes
+  document.querySelectorAll('[data-' + lang + ']').forEach(el => {
+    el.innerHTML = el.getAttribute('data-' + lang);
+  });
+  // Re-apply opposite to ensure sync after toggling
+  const other = lang === 'en' ? 'es' : 'en';
+  document.querySelectorAll('[data-' + lang + ']:not([data-' + other + '])').forEach(el => {
+    el.innerHTML = el.getAttribute('data-' + lang);
+  });
+}
+
+// ============================================================
+//  FAQ
+// ============================================================
+function renderFAQ() {
+  const list = document.getElementById('faq-list');
+  list.innerHTML = '';
+  const items = FAQS[currentLang];
+  items.forEach((item, i) => {
+    const div = document.createElement('div');
+    div.className = 'faq-item';
+    div.innerHTML = `
+      <button class="faq-q" onclick="toggleFAQ(${i})">
+        ${item.q}
+        <span class="faq-chev" id="fc-${i}">+</span>
+      </button>
+      <div class="faq-a" id="fa-${i}">${item.a}</div>
+    `;
+    list.appendChild(div);
+  });
+}
+
+function toggleFAQ(i) {
+  const body = document.getElementById('fa-' + i);
+  const icon = document.getElementById('fc-' + i);
+  const open = body.style.display === 'block';
+  body.style.display = open ? 'none' : 'block';
+  icon.textContent   = open ? '+'    : '−';
+}
+
+// ============================================================
+//  SCROLL ANIMATIONS
+// ============================================================
+function initScrollAnim() {
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('v'); });
+  }, { threshold: 0.07 });
+  document.querySelectorAll('.fu').forEach(el => obs.observe(el));
+}
+
+// ============================================================
+//  INCUBATION BAR
+// ============================================================
+function initIncubBar() {
+  const fill = document.getElementById('incub-fill');
+  if (!fill) return;
+  const obs = new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting) { fill.style.width = '100%'; obs.disconnect(); }
+  }, { threshold: 0.4 });
+  obs.observe(fill.closest('.incub-box'));
+}
+
+// ============================================================
+//  2D MAP — Leaflet
+// ============================================================
+let map2 = null;
+
+function init2D() {
+  if (map2) return;
+  map2 = L.map('map2d', { center:[10, -15], zoom:2, minZoom:1, maxZoom:8 });
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    attribution:'© OpenStreetMap © CARTO', subdomains:'abcd', maxZoom:19
+  }).addTo(map2);
+
+  // Route line: Argentina → Cape Verde → Tenerife
+  L.polyline([[-34.61,-58.39],[15.12,-23.60],[28.29,-16.62]], {
+    color:'#f4a261', weight:2.5, dashArray:'8,6', opacity:.8
+  }).addTo(map2);
+  // Repatriation: Tenerife → Madrid
+  L.polyline([[28.29,-16.62],[40.42,-3.70]], {
+    color:'#9b72cf', weight:2, dashArray:'5,5', opacity:.55
+  }).addTo(map2);
+
+  function mkr(lat, lng, col, label, detail) {
+    L.circleMarker([lat,lng], {
+      radius:11, fillColor:col, color:'#fff', weight:2, opacity:1, fillOpacity:.85
+    }).addTo(map2).bindPopup(
+      `<div style="font-family:Inter,sans-serif;background:#14141f;color:#f5f5f7;padding:12px;border-radius:8px;min-width:200px;font-size:.82rem;"><strong style="font-size:.88rem;">${label}</strong><br><span style="color:#8e8e9a;font-size:.76rem;">${detail}</span></div>`
+    );
+  }
+
+  mkr(-34.61,-58.39,'#e63946','Buenos Aires, Argentina','Probable origin of contagion (WHO — under investigation)');
+  mkr(15.12, -23.60,'#f4a261','Cape Verde','MV Hondius previously anchored here');
+  mkr(28.29, -16.62,'#4895ef','Tenerife, Canary Islands','Current destination · No free disembarkation');
+  mkr(-26.20,  28.04,'#e63946','Johannesburg, South Africa','1 patient in critical condition — ICU');
+  mkr(40.42,  -3.70,'#9b72cf','Madrid, Spain','Hospital Gómez Ulla · Quarantine for 14 Spanish nationals');
+
+  // Pulsing ship marker
+  const shipIcon = L.divIcon({
+    html:`<div style="width:13px;height:13px;background:#4895ef;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 5px rgba(72,149,239,.3);"></div>`,
+    iconSize:[13,13], className:''
+  });
+  L.marker([21.5,-20.5],{icon:shipIcon}).addTo(map2)
+   .bindPopup('<div style="font-family:Inter,sans-serif;background:#14141f;color:#f5f5f7;padding:12px;border-radius:8px;font-size:.82rem;"><strong>🚢 MV Hondius</strong><br><span style="color:#8e8e9a;">En route to Tenerife · 147 people aboard</span></div>');
+}
+
+// ============================================================
+//  3D GLOBE — Three.js
+// ============================================================
+let renderer3, scene3, cam3, globe3;
+let dotMeshes = [];
+let dragging = false, prevMouse = {x:0,y:0}, lastInt = 0;
+
+function init3D() {
+  if (renderer3) return;
+  const el = document.getElementById('map3d');
+  const W = el.clientWidth, H = el.clientHeight;
+
+  scene3 = new THREE.Scene();
+  cam3   = new THREE.PerspectiveCamera(45, W/H, 0.1, 1000);
+  cam3.position.z = 2.8;
+
+  renderer3 = new THREE.WebGLRenderer({ antialias:true, alpha:true });
+  renderer3.setSize(W, H);
+  renderer3.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer3.setClearColor(0x0b0b0b, 1);
+  el.appendChild(renderer3.domElement);
+
+  scene3.add(new THREE.AmbientLight(0xffffff, 0.45));
+  const dl = new THREE.DirectionalLight(0xffffff, 0.75);
+  dl.position.set(5,3,5); scene3.add(dl);
+
+  // Stars
+  const sv = [];
+  for(let i=0;i<2000;i++) sv.push((Math.random()-.5)*200,(Math.random()-.5)*200,(Math.random()-.5)*200);
+  const sg = new THREE.BufferGeometry();
+  sg.setAttribute('position', new THREE.Float32BufferAttribute(sv,3));
+  scene3.add(new THREE.Points(sg, new THREE.PointsMaterial({color:0xffffff,size:.12,transparent:true,opacity:.5})));
+
+  // Globe
+  const geo = new THREE.SphereGeometry(1,64,64);
+  new THREE.TextureLoader().load(
+    'https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-night.jpg',
+    tex => buildGlobe(geo, new THREE.MeshPhongMaterial({map:tex,specular:new THREE.Color(0x111130),shininess:12})),
+    undefined,
+    ()  => buildGlobe(geo, new THREE.MeshPhongMaterial({color:0x0a1628,specular:0x1a2a44,shininess:15}))
+  );
+  // Atmosphere
+  scene3.add(new THREE.Mesh(
+    new THREE.SphereGeometry(1.02,64,64),
+    new THREE.MeshPhongMaterial({color:0x0f1e3f,transparent:true,opacity:.1,side:THREE.BackSide})
+  ));
+
+  const c = renderer3.domElement;
+  c.addEventListener('mousedown',  e => { dragging=true; prevMouse={x:e.clientX,y:e.clientY}; });
+  c.addEventListener('mousemove',  onDrag3D);
+  c.addEventListener('mouseup',    () => { dragging=false; lastInt=Date.now(); });
+  c.addEventListener('mouseleave', () => { dragging=false; lastInt=Date.now(); });
+  c.addEventListener('click',      onGlobeClick);
+  c.addEventListener('touchstart', e => { dragging=true; prevMouse={x:e.touches[0].clientX,y:e.touches[0].clientY}; },{passive:true});
+  c.addEventListener('touchmove',  e => { onDragTouch3D(e); },{passive:true});
+  c.addEventListener('touchend',   () => { dragging=false; lastInt=Date.now(); });
+  window.addEventListener('resize', resizeGlobe);
+  animate3D();
+}
+
+function buildGlobe(geo, mat) {
+  globe3 = new THREE.Mesh(geo, mat);
+  scene3.add(globe3);
+  GLOBE_POINTS.forEach(p => {
+    const pos  = ll2xyz(p.lat, p.lng, 1.015);
+    const col  = new THREE.Color(p.color);
+    const size = 0.022;
+    const gm = new THREE.Mesh(new THREE.SphereGeometry(size*2.5,8,8), new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:.15}));
+    gm.position.copy(pos); globe3.add(gm);
+    const dm = new THREE.Mesh(new THREE.SphereGeometry(size,10,10), new THREE.MeshBasicMaterial({color:col}));
+    dm.position.copy(pos); dm.userData={point:p,glow:gm};
+    globe3.add(dm); dotMeshes.push(dm);
+  });
+}
+
+function ll2xyz(lat, lng, r) {
+  const phi   = (90-lat)*Math.PI/180;
+  const theta = (lng+180)*Math.PI/180;
+  return new THREE.Vector3(-r*Math.sin(phi)*Math.cos(theta), r*Math.cos(phi), r*Math.sin(phi)*Math.sin(theta));
+}
+
+function animate3D() {
+  requestAnimationFrame(animate3D);
+  if(globe3 && !dragging && Date.now()-lastInt>2500) globe3.rotation.y+=0.0022;
+  const t = Date.now()*.001;
+  dotMeshes.forEach(m => { if(m.userData.glow) m.userData.glow.material.opacity=0.08+0.14*Math.abs(Math.sin(t*2)); });
+  renderer3.render(scene3,cam3);
+}
+
+function onDrag3D(e) {
+  if(!dragging||!globe3) return;
+  globe3.rotation.y += (e.clientX-prevMouse.x)*.005;
+  globe3.rotation.x  = Math.max(-1.2,Math.min(1.2,globe3.rotation.x+(e.clientY-prevMouse.y)*.005));
+  prevMouse = {x:e.clientX,y:e.clientY};
+}
+function onDragTouch3D(e) {
+  if(!globe3) return;
+  globe3.rotation.y += (e.touches[0].clientX-prevMouse.x)*.005;
+  globe3.rotation.x  = Math.max(-1.2,Math.min(1.2,globe3.rotation.x+(e.touches[0].clientY-prevMouse.y)*.005));
+  prevMouse = {x:e.touches[0].clientX,y:e.touches[0].clientY};
+}
+
+function onGlobeClick(e) {
+  if(!renderer3||!cam3) return;
+  const rect = renderer3.domElement.getBoundingClientRect();
+  const mouse = new THREE.Vector2(((e.clientX-rect.left)/rect.width)*2-1,-((e.clientY-rect.top)/rect.height)*2+1);
+  const ray = new THREE.Raycaster();
+  ray.setFromCamera(mouse,cam3);
+  const hits = ray.intersectObjects(dotMeshes);
+  if(hits.length) {
+    const p = hits[0].object.userData.point;
+    document.getElementById('g-ctry').textContent   = p.name;
+    document.getElementById('g-reg').textContent    = p.role;
+    document.getElementById('g-role').textContent   = p.role;
+    document.getElementById('g-detail').textContent = p.detail;
+    document.getElementById('g-panel').classList.add('show');
+  }
+}
+function closePanel() { document.getElementById('g-panel').classList.remove('show'); }
+
+function resizeGlobe() {
+  if(!renderer3) return;
+  const el = document.getElementById('map3d');
+  cam3.aspect = el.clientWidth/el.clientHeight;
+  cam3.updateProjectionMatrix();
+  renderer3.setSize(el.clientWidth,el.clientHeight);
+}
+
+// ============================================================
+//  MAP TOGGLE
+// ============================================================
+function switchMap(mode) {
+  const is2d = mode==='2d';
+  document.getElementById('map2d').style.display = is2d ? 'block' : 'none';
+  document.getElementById('map3d').style.display = is2d ? 'none'  : 'block';
+  document.getElementById('btn2d').classList.toggle('on', is2d);
+  document.getElementById('btn3d').classList.toggle('on', !is2d);
+  if(is2d) { init2D(); setTimeout(() => map2&&map2.invalidateSize(),50); }
+  else      { init3D(); setTimeout(resizeGlobe,50); }
+}
+
+// ============================================================
+//  MOBILE NAV
+// ============================================================
+document.getElementById('hamburger').addEventListener('click', () => {
+  document.getElementById('main-nav').classList.toggle('open');
+});
+
+// ============================================================
+//  BOOT
+// ============================================================
+document.addEventListener('DOMContentLoaded', () => {
+  renderFAQ();
+  initScrollAnim();
+  initIncubBar();
+  init2D();
+  applyLang('en'); // ensure correct initial state
+});
+</script>
+</body>
+</html>
