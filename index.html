@@ -357,9 +357,37 @@
       .mc-val { font-size: 1.7rem; }
       .dash-grid { grid-template-columns: 1fr; }
     }
+    /* ===== DISCLAIMER MODAL ===== */
+    #disclaimer-overlay { position:fixed; inset:0; z-index:9999; background:rgba(5,5,10,.82); backdrop-filter:blur(6px); display:flex; align-items:center; justify-content:center; padding:20px; }
+    #disclaimer-overlay.hidden { display:none; }
+    .disc-card { background:#0e1117; border:1px solid rgba(255,255,255,.1); border-radius:18px; max-width:580px; width:100%; overflow:hidden; box-shadow:0 24px 64px rgba(0,0,0,.7); }
+    .disc-body { padding:36px 36px 28px; }
+    .disc-lbl { font-size:.68rem; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:var(--teal); margin-bottom:16px; }
+    .disc-title { font-size:1.6rem; font-weight:800; color:#fff; margin-bottom:20px; line-height:1.25; }
+    .disc-body p { font-size:.92rem; color:rgba(255,255,255,.7); line-height:1.72; margin-bottom:14px; }
+    .disc-body p:last-child { margin-bottom:0; }
+    .disc-footer { padding:20px 36px 28px; border-top:1px solid rgba(255,255,255,.07); display:flex; justify-content:flex-end; }
+    .disc-btn { background:var(--teal); color:#fff; border:none; border-radius:12px; padding:14px 32px; font-size:.95rem; font-weight:700; cursor:pointer; transition:opacity .15s; }
+    .disc-btn:hover { opacity:.85; }
+    @media(max-width:480px){ .disc-body{padding:24px 20px 20px;} .disc-title{font-size:1.3rem;} .disc-footer{padding:16px 20px 22px;} }
   </style>
 </head>
 <body>
+
+<!-- ===== DISCLAIMER MODAL ===== -->
+<div id="disclaimer-overlay">
+  <div class="disc-card">
+    <div class="disc-body">
+      <div class="disc-lbl" id="disc-lbl">Before you continue</div>
+      <h2 class="disc-title" id="disc-title">This is not medical advice.</h2>
+      <p id="disc-p1">HantaTracker aggregates publicly reported information for awareness only. It is not a substitute for official public health guidance, and case counts may be incomplete or out of date.</p>
+      <p id="disc-p2">For symptoms or medical questions, contact a clinician or your local public health authority.</p>
+    </div>
+    <div class="disc-footer">
+      <button class="disc-btn" id="disc-btn" onclick="closeDisclaimer()">I understand</button>
+    </div>
+  </div>
+</div>
 
 <!-- ===== BREAKING TICKER ===== -->
 <div class="ticker">
@@ -1329,7 +1357,28 @@ document.getElementById('hamburger').addEventListener('click', () => {
 // ============================================================
 //  BOOT
 // ============================================================
+function closeDisclaimer() {
+  document.getElementById('disclaimer-overlay').classList.add('hidden');
+  sessionStorage.setItem('disc','1');
+}
+
+function initDisclaimer() {
+  if (sessionStorage.getItem('disc')) {
+    document.getElementById('disclaimer-overlay').classList.add('hidden');
+    return;
+  }
+  const lang = navigator.language && navigator.language.startsWith('es') ? 'es' : 'en';
+  if (lang === 'es') {
+    document.getElementById('disc-lbl').textContent   = 'Antes de continuar';
+    document.getElementById('disc-title').textContent = 'Esto no es consejo médico.';
+    document.getElementById('disc-p1').textContent    = 'HantaTracker recopila información publicada oficialmente con fines informativos. No sustituye las recomendaciones de las autoridades sanitarias. Los datos pueden estar incompletos o no actualizados.';
+    document.getElementById('disc-p2').textContent    = 'Si tienes síntomas o dudas médicas, contacta con un médico o tu autoridad sanitaria local.';
+    document.getElementById('disc-btn').textContent   = 'Entendido';
+  }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+  initDisclaimer();
   renderFAQ();
   renderNews();
   initScrollAnim();
