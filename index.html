@@ -1009,7 +1009,8 @@ let dragging = false, prevMouse = {x:0,y:0}, lastInt = 0;
 function init3D() {
   if (renderer3) return;
   const el = document.getElementById('map3d');
-  const W = el.clientWidth, H = el.clientHeight;
+  const W = el.clientWidth || el.offsetWidth || 600;
+  const H = el.clientHeight || el.offsetHeight || 500;
 
   scene3 = new THREE.Scene();
   cam3   = new THREE.PerspectiveCamera(45, W/H, 0.1, 1000);
@@ -1137,7 +1138,7 @@ function switchMap(mode) {
   document.getElementById('btn2d').classList.toggle('on', is2d);
   document.getElementById('btn3d').classList.toggle('on', !is2d);
   if(is2d) { init2D(); setTimeout(() => map2&&map2.invalidateSize(),50); }
-  else      { init3D(); setTimeout(resizeGlobe,50); }
+  else      { setTimeout(() => { init3D(); resizeGlobe(); }, 60); }
 }
 
 // ============================================================
