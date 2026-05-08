@@ -73,6 +73,7 @@
     .ticker-track { overflow: hidden; flex: 1; }
     .ticker-txt { display: inline-block; white-space: nowrap; font-size: .79rem; font-weight: 500; animation: tick 30s linear infinite; }
     @keyframes tick { from { transform: translateX(100vw); } to { transform: translateX(-100%); } }
+    @keyframes shipPulse { 0%,100%{ transform:scale(1);opacity:.6; } 50%{ transform:scale(1.8);opacity:0; } }
 
     /* ===== HEADER ===== */
     header { position: sticky; top: 0; z-index: 1000; height: 58px; background: rgba(11,11,11,.95); backdrop-filter: blur(16px); border-bottom: 1px solid var(--bdr); }
@@ -982,41 +983,77 @@ let map2 = null;
 
 function init2D() {
   if (map2) return;
-  map2 = L.map('map2d', { center:[10, -15], zoom:2, minZoom:1, maxZoom:8 });
+  map2 = L.map('map2d', { center:[15, -15], zoom:2, minZoom:1, maxZoom:8 });
   L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
     attribution:'© OpenStreetMap © CARTO', subdomains:'abcd', maxZoom:19
   }).addTo(map2);
 
-  // Route line: Argentina → Cape Verde → Tenerife
-  L.polyline([[-34.61,-58.39],[15.12,-23.60],[28.29,-16.62]], {
-    color:'#f4a261', weight:2.5, dashArray:'8,6', opacity:.8
+  // Ship route: Argentina → Cape Verde → Ship position → Tenerife
+  L.polyline([[-34.61,-58.39],[15.12,-23.60],[21.5,-20.5],[28.29,-16.62]], {
+    color:'#f4a261', weight:3, dashArray:'12,8', opacity:.9
   }).addTo(map2);
-  // Repatriation: Tenerife → Madrid
+  // Repatriation route: Tenerife → Madrid
   L.polyline([[28.29,-16.62],[40.42,-3.70]], {
-    color:'#9b72cf', weight:2, dashArray:'5,5', opacity:.55
+    color:'#9b72cf', weight:2.5, dashArray:'6,6', opacity:.75
+  }).addTo(map2);
+  // Patient transport: Argentina → Johannesburg (air)
+  L.polyline([[-34.61,-58.39],[-26.20,28.04]], {
+    color:'#e63946', weight:1.5, dashArray:'4,8', opacity:.5
   }).addTo(map2);
 
-  function mkr(lat, lng, col, label, detail) {
-    L.circleMarker([lat,lng], {
-      radius:11, fillColor:col, color:'#fff', weight:2, opacity:1, fillOpacity:.85
-    }).addTo(map2).bindPopup(
-      `<div style="font-family:Inter,sans-serif;background:#14141f;color:#f5f5f7;padding:12px;border-radius:8px;min-width:200px;font-size:.82rem;"><strong style="font-size:.88rem;">${label}</strong><br><span style="color:#8e8e9a;font-size:.76rem;">${detail}</span></div>`
-    );
+  const popup = (label, detail) =>
+    `<div style="font-family:Inter,sans-serif;background:#14141f;color:#f5f5f7;padding:14px 16px;border-radius:10px;min-width:210px;font-size:.82rem;border:1px solid rgba(255,255,255,.08);">
+      <strong style="font-size:.9rem;display:block;margin-bottom:4px;">${label}</strong>
+      <span style="color:#8e8e9a;font-size:.76rem;line-height:1.5;">${detail}</span>
+    </div>`;
+
+  function numMkr(lat, lng, color, badge, label, detail) {
+    const ic = L.divIcon({
+      html:`<div style="
+        position:relative;width:38px;height:38px;
+        background:${color};border-radius:50%;
+        border:2.5px solid rgba(255,255,255,.85);
+        box-shadow:0 0 0 4px ${color}44,0 2px 12px ${color}66;
+        display:flex;align-items:center;justify-content:center;
+        font-family:Inter,sans-serif;font-weight:800;font-size:.75rem;color:#fff;
+        cursor:pointer;">
+        ${badge}
+      </div>`,
+      iconSize:[38,38], iconAnchor:[19,19], className:''
+    });
+    L.marker([lat,lng],{icon:ic}).addTo(map2).bindPopup(popup(label,detail));
   }
 
-  mkr(-34.61,-58.39,'#e63946','Buenos Aires, Argentina','Probable origin of contagion (WHO — under investigation)');
-  mkr(15.12, -23.60,'#f4a261','Cape Verde','MV Hondius previously anchored here');
-  mkr(28.29, -16.62,'#4895ef','Tenerife, Canary Islands','Current destination · No free disembarkation');
-  mkr(-26.20,  28.04,'#e63946','Johannesburg, South Africa','1 patient in critical condition — ICU');
-  mkr(40.42,  -3.70,'#9b72cf','Madrid, Spain','Hospital Gómez Ulla · Quarantine for 14 Spanish nationals');
+  numMkr(-34.61,-58.39,'#e63946','⚠','Buenos Aires, Argentina','Probable origin of contagion · WHO under investigation');
+  numMkr(15.12,-23.60,'#f4a261','⚓','Cape Verde','MV Hondius previously anchored here');
+  numMkr(28.29,-16.62,'#4895ef','✈','Tenerife, Canary Islands','Current destination · No free disembarkation');
+  numMkr(-26.20,28.04,'#e63946','1','Johannesburg, South Africa','1 patient critical — ICU admission');
+  numMkr(40.42,-3.70,'#9b72cf','14','Madrid, Spain','Hospital Gómez Ulla · 14 Spanish nationals in quarantine');
 
-  // Pulsing ship marker
-  const shipIcon = L.divIcon({
-    html:`<div style="width:13px;height:13px;background:#4895ef;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 5px rgba(72,149,239,.3);"></div>`,
-    iconSize:[13,13], className:''
+  // Animated ship marker
+  const shipIc = L.divIcon({
+    html:`<div style="position:relative;width:48px;height:48px;display:flex;align-items:center;justify-content:center;">
+      <div style="position:absolute;width:48px;height:48px;background:rgba(72,149,239,.35);border-radius:50%;animation:shipPulse 2s ease-out infinite;"></div>
+      <div style="position:absolute;width:32px;height:32px;background:rgba(72,149,239,.2);border-radius:50%;animation:shipPulse 2s ease-out infinite .4s;"></div>
+      <div style="position:relative;width:28px;height:28px;background:#1a6ef5;border-radius:50%;border:2.5px solid #fff;box-shadow:0 0 12px #4895ef;display:flex;align-items:center;justify-content:center;font-size:13px;">🚢</div>
+    </div>`,
+    iconSize:[48,48], iconAnchor:[24,24], className:''
   });
-  L.marker([21.5,-20.5],{icon:shipIcon}).addTo(map2)
-   .bindPopup('<div style="font-family:Inter,sans-serif;background:#14141f;color:#f5f5f7;padding:12px;border-radius:8px;font-size:.82rem;"><strong>🚢 MV Hondius</strong><br><span style="color:#8e8e9a;">En route to Tenerife · 147 people aboard</span></div>');
+  L.marker([21.5,-20.5],{icon:shipIc,zIndexOffset:1000}).addTo(map2)
+    .bindPopup(popup('🚢 MV Hondius — At Sea','En route to Tenerife · 147 people aboard · 8 cases confirmed'));
+
+  // Map legend
+  const legend = L.control({position:'bottomleft'});
+  legend.onAdd = () => {
+    const d = L.DomUtil.create('div');
+    d.innerHTML = `<div style="background:rgba(11,11,11,.88);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:8px 12px;font-family:Inter,sans-serif;font-size:.68rem;color:#aaa;line-height:1.8;">
+      <div style="display:flex;align-items:center;gap:6px;"><span style="display:inline-block;width:20px;height:2px;background:#f4a261;border-top:2px dashed #f4a261;"></span> Ship route</div>
+      <div style="display:flex;align-items:center;gap:6px;"><span style="display:inline-block;width:20px;height:2px;background:#9b72cf;border-top:2px dashed #9b72cf;"></span> Repatriation</div>
+      <div style="display:flex;align-items:center;gap:6px;"><span style="display:inline-block;width:20px;height:2px;background:#e63946;border-top:2px dashed #e63946;"></span> Patient transport</div>
+    </div>`;
+    return d;
+  };
+  legend.addTo(map2);
 }
 
 // ============================================================
@@ -1080,14 +1117,33 @@ function init3D() {
   animate3D();
 }
 
+function arcLine(lat1,lng1, lat2,lng2, color) {
+  const v1 = ll2xyz(lat1,lng1,1.0), v2 = ll2xyz(lat2,lng2,1.0);
+  const mid = v1.clone().add(v2).normalize().multiplyScalar(1.35);
+  const curve = new THREE.QuadraticBezierCurve3(v1, mid, v2);
+  const pts = curve.getPoints(60);
+  const geo = new THREE.BufferGeometry().setFromPoints(pts);
+  const line = new THREE.Line(geo, new THREE.LineBasicMaterial({color:new THREE.Color(color),transparent:true,opacity:.75}));
+  globe3.add(line);
+}
+
 function buildGlobe(geo, mat) {
   globe3 = new THREE.Mesh(geo, mat);
   scene3.add(globe3);
+
+  // Route arcs
+  arcLine(-34.61,-58.39, 15.12,-23.60, '#f4a261'); // Argentina → Cape Verde
+  arcLine(15.12,-23.60,  21.5,-20.5,   '#f4a261'); // Cape Verde → Ship
+  arcLine(21.5,-20.5,    28.29,-16.62, '#f4a261'); // Ship → Tenerife
+  arcLine(28.29,-16.62,  40.42,-3.70,  '#9b72cf'); // Tenerife → Madrid
+  arcLine(-34.61,-58.39, -26.20,28.04, '#e6394666'); // Argentina → Johannesburg
+
   GLOBE_POINTS.forEach(p => {
     const pos  = ll2xyz(p.lat, p.lng, 1.015);
     const col  = new THREE.Color(p.color);
-    const size = 0.022;
-    const gm = new THREE.Mesh(new THREE.SphereGeometry(size*2.5,8,8), new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:.15}));
+    const isShip = p.role === 'Ship Position';
+    const size = isShip ? 0.032 : 0.022;
+    const gm = new THREE.Mesh(new THREE.SphereGeometry(size*2.8,8,8), new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:.18}));
     gm.position.copy(pos); globe3.add(gm);
     const dm = new THREE.Mesh(new THREE.SphereGeometry(size,10,10), new THREE.MeshBasicMaterial({color:col}));
     dm.position.copy(pos); dm.userData={point:p,glow:gm};
