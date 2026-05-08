@@ -478,9 +478,12 @@
         <p class="sec-lbl" style="color:var(--blue);" data-en="Geographic Distribution" data-es="Distribución geográfica">Geographic Distribution</p>
         <h2 class="sec-title" style="margin-bottom:0;" data-en="Outbreak <span style='color:var(--red)'>Map</span>" data-es="Mapa del <span style='color:var(--red)'>Brote</span>">Outbreak <span style="color:var(--red)">Map</span></h2>
       </div>
-      <div class="map-toggle">
-        <button class="tbtn on" id="btn2d" onclick="switchMap('2d')" data-en="2D Map" data-es="Mapa 2D">2D Map</button>
-        <button class="tbtn"    id="btn3d" onclick="switchMap('3d')" data-en="3D Globe" data-es="Globo 3D">3D Globe</button>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+        <div class="map-toggle">
+          <button class="tbtn on" id="btn2d" onclick="switchMap('2d')" data-en="2D Map" data-es="Mapa 2D">2D Map</button>
+          <button class="tbtn"    id="btn3d" onclick="switchMap('3d')" data-en="3D Globe" data-es="Globo 3D">3D Globe</button>
+        </div>
+        <button id="replay-btn" onclick="replayRoute()" data-en="▶ Replay Route" data-es="▶ Reproducir ruta" style="background:rgba(244,162,97,.12);border:1px solid rgba(244,162,97,.4);color:#f4a261;font-size:.75rem;font-weight:700;padding:7px 14px;border-radius:8px;cursor:pointer;transition:background .2s;white-space:nowrap;">▶ Replay Route</button>
       </div>
     </div>
 
@@ -1117,6 +1120,82 @@ function initIncubBar() {
 //  2D MAP — Leaflet
 // ============================================================
 let map2 = null;
+
+// Route animation state
+let animTimer = null, animLayer = null, animMarker = null;
+
+const ROUTE_WP = [
+  { lat:-54.80, lng:-68.30, label:'Ushuaia, Argentina',    date:'Apr 1'  },
+  { lat:-51.70, lng:-57.85, label:'Falkland Islands',      date:'Apr 4'  },
+  { lat:-33.00, lng:-28.00, label:'South Atlantic',        date:'Apr 10' },
+  { lat:-15.94, lng:-5.72,  label:'Saint Helena',          date:'Apr 20' },
+  { lat:-7.95,  lng:-14.37, label:'Ascension Island',      date:'Apr 27' },
+  { lat:6.00,   lng:-20.00, label:'North Atlantic',        date:'May 1'  },
+  { lat:15.12,  lng:-23.60, label:'Cape Verde',            date:'May 2'  },
+  { lat:21.50,  lng:-20.50, label:'At sea',                date:'May 8'  },
+];
+
+function replayRoute() {
+  if (!map2) return;
+  // Switch to 2D if needed
+  switchMap('2d');
+
+  // Clear previous animation
+  if (animTimer) { clearInterval(animTimer); animTimer = null; }
+  if (animLayer) { map2.removeLayer(animLayer); animLayer = null; }
+  if (animMarker){ map2.removeLayer(animMarker); animMarker = null; }
+
+  // Build dense interpolated path
+  const path = [];
+  const STEPS = 60;
+  for (let i = 0; i < ROUTE_WP.length - 1; i++) {
+    const a = ROUTE_WP[i], b = ROUTE_WP[i+1];
+    for (let s = 0; s < STEPS; s++) {
+      const t = s / STEPS;
+      path.push({ lat: a.lat+(b.lat-a.lat)*t, lng: a.lng+(b.lng-a.lng)*t, wp: s===0 ? a : null });
+    }
+  }
+  path.push({ lat: ROUTE_WP[ROUTE_WP.length-1].lat, lng: ROUTE_WP[ROUTE_WP.length-1].lng, wp: ROUTE_WP[ROUTE_WP.length-1] });
+
+  animLayer = L.polyline([], { color:'#f4a261', weight:3.5, opacity:1, dashArray:null }).addTo(map2);
+
+  const shipIc = L.divIcon({
+    html:`<div style="width:26px;height:26px;background:#1a6ef5;border-radius:50%;border:2.5px solid #fff;box-shadow:0 0 12px #4895ef;display:flex;align-items:center;justify-content:center;font-size:12px;">🚢</div>`,
+    iconSize:[26,26], iconAnchor:[13,13], className:''
+  });
+  animMarker = L.marker([ROUTE_WP[0].lat, ROUTE_WP[0].lng], {icon:shipIc, zIndexOffset:2000}).addTo(map2);
+
+  // Label overlay
+  const labelDiv = document.createElement('div');
+  labelDiv.style.cssText = 'position:absolute;bottom:12px;left:50%;transform:translateX(-50%);background:rgba(10,10,16,.88);border:1px solid rgba(244,162,97,.4);color:#f4a261;font-family:Inter,sans-serif;font-size:.72rem;font-weight:700;padding:5px 14px;border-radius:100px;pointer-events:none;z-index:1000;white-space:nowrap;';
+  labelDiv.id = 'anim-label';
+  document.getElementById('map2d').style.position = 'relative';
+  document.getElementById('map2d').appendChild(labelDiv);
+
+  map2.fitBounds([[-55,-70],[22,-5]], {animate:true, duration:0.8});
+
+  const drawn = [];
+  let frame = 0;
+  const btn = document.getElementById('replay-btn');
+  btn.textContent = '■ Stop';
+
+  animTimer = setInterval(() => {
+    if (frame >= path.length) {
+      clearInterval(animTimer); animTimer = null;
+      btn.setAttribute('data-en','▶ Replay Route');
+      btn.setAttribute('data-es','▶ Reproducir ruta');
+      btn.textContent = currentLang==='es' ? '▶ Reproducir ruta' : '▶ Replay Route';
+      if (labelDiv.parentNode) labelDiv.parentNode.removeChild(labelDiv);
+      return;
+    }
+    const p = path[frame];
+    drawn.push([p.lat, p.lng]);
+    animLayer.setLatLngs(drawn);
+    animMarker.setLatLng([p.lat, p.lng]);
+    if (p.wp) labelDiv.textContent = `${p.wp.date}  ·  ${p.wp.label}`;
+    frame += 3;
+  }, 25);
+}
 
 function init2D() {
   if (map2) return;
