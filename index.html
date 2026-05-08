@@ -995,12 +995,18 @@ function renderNews() {
 //  GLOBE DATA — locations for the 3D globe
 // ============================================================
 const GLOBE_POINTS = [
-  { name:'Argentina', detail:'Probable origin of contagion', lat:-34.61, lng:-58.39, color:'#e63946', role:'Probable Origin' },
-  { name:'Cape Verde', detail:'MV Hondius previously anchored here', lat:15.12,  lng:-23.60, color:'#f4a261', role:'Ship Anchored' },
-  { name:'Tenerife, Spain', detail:'Current destination — no free disembarkation', lat:28.29,  lng:-16.62, color:'#4895ef', role:'Destination' },
-  { name:'MV Hondius (at sea)', detail:'147 people aboard — en route to Tenerife', lat:21.50,  lng:-20.50, color:'#4895ef', role:'Ship Position' },
-  { name:'Johannesburg, South Africa', detail:'1 critical patient in ICU', lat:-26.20,  lng:28.04, color:'#e63946', role:'ICU Patient' },
-  { name:'Madrid, Spain', detail:'Hospital Gómez Ulla — planned quarantine', lat:40.42,  lng:-3.70, color:'#9b72cf', role:'Quarantine' },
+  { name:'Ushuaia, Argentina',         detail:'Departure · April 1, 2026',                     lat:-54.80, lng:-68.30, color:'#e63946', role:'Origin' },
+  { name:'Saint Helena (Jamestown)',   detail:'Passengers disembarked · contact tracing',       lat:-15.94, lng:-5.72,  color:'#f4a261', role:'Route Stop' },
+  { name:'Ascension Island',           detail:'1 passenger evacuated · April 27',               lat:-7.95,  lng:-14.37, color:'#f4a261', role:'Evacuation' },
+  { name:'Praia, Cape Verde',          detail:'Ship anchored · health authorities boarded',     lat:15.12,  lng:-23.60, color:'#f4a261', role:'Ship Anchored' },
+  { name:'MV Hondius (at sea)',        detail:'147 people aboard · en route to Tenerife',       lat:21.50,  lng:-20.50, color:'#22c55e', role:'Ship Position' },
+  { name:'Canary Islands',             detail:'Destination port · no free disembarkation',      lat:28.29,  lng:-16.62, color:'#22c55e', role:'Destination' },
+  { name:'Johannesburg, South Africa', detail:'1 patient critical — ICU',                       lat:-26.20, lng:28.04,  color:'#e63946', role:'ICU Patient' },
+  { name:'Madrid, Spain',              detail:'Hospital Gómez Ulla · 14 Spanish nationals',     lat:40.42,  lng:-3.70,  color:'#9b72cf', role:'Quarantine' },
+  { name:'Amsterdam, Netherlands',     detail:'Dutch nationals repatriation',                   lat:52.37,  lng:4.90,   color:'#9b72cf', role:'Repatriation' },
+  { name:'Frankfurt, Germany',         detail:'German national deceased · cases investigated',  lat:50.11,  lng:8.68,   color:'#e63946', role:'Death' },
+  { name:'London, United Kingdom',     detail:'UK nationals under contact tracing',             lat:51.51,  lng:-0.13,  color:'#9b72cf', role:'Repatriation' },
+  { name:'Zurich, Switzerland',        detail:'1 Swiss patient treated post-disembark',         lat:47.38,  lng:8.54,   color:'#f4a261', role:'Case' },
 ];
 
 // ============================================================
@@ -1113,73 +1119,88 @@ let map2 = null;
 
 function init2D() {
   if (map2) return;
-  map2 = L.map('map2d', { center:[15, -15], zoom:2, minZoom:1, maxZoom:8 });
+  map2 = L.map('map2d', { center:[20, -10], zoom:2, minZoom:1, maxZoom:8 });
   L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
     attribution:'© OpenStreetMap © CARTO', subdomains:'abcd', maxZoom:19
   }).addTo(map2);
 
-  // Ship route: Argentina → Cape Verde → Ship position → Tenerife
-  L.polyline([[-34.61,-58.39],[15.12,-23.60],[21.5,-20.5],[28.29,-16.62]], {
-    color:'#f4a261', weight:3, dashArray:'12,8', opacity:.9
-  }).addTo(map2);
-  // Repatriation route: Tenerife → Madrid
-  L.polyline([[28.29,-16.62],[40.42,-3.70]], {
-    color:'#9b72cf', weight:2.5, dashArray:'6,6', opacity:.75
-  }).addTo(map2);
-  // Patient transport: Argentina → Johannesburg (air)
-  L.polyline([[-34.61,-58.39],[-26.20,28.04]], {
-    color:'#e63946', weight:1.5, dashArray:'4,8', opacity:.5
-  }).addTo(map2);
+  // — SHIP ROUTE (orange dashed) —
+  // Ushuaia → Falklands → St Helena → Ascension Island → Cape Verde → Ship pos → Canary Islands
+  L.polyline([
+    [-54.80,-68.30],[-51.70,-57.85],[-15.94,-5.72],[-7.95,-14.37],
+    [15.12,-23.60],[21.5,-20.5],[28.29,-16.62]
+  ], { color:'#f4a261', weight:2.5, dashArray:'10,7', opacity:.9 }).addTo(map2);
+
+  // — REPATRIATION / FLIGHT ARCS (purple dashed) —
+  const flights = [
+    [[28.29,-16.62],[40.42,-3.70]],   // Tenerife → Madrid
+    [[28.29,-16.62],[52.37,4.90]],    // Tenerife → Amsterdam
+    [[28.29,-16.62],[51.51,-0.13]],   // Tenerife → London
+    [[15.12,-23.60],[50.11,8.68]],    // Cape Verde → Frankfurt
+    [[15.12,-23.60],[47.38,8.54]],    // Cape Verde → Zurich
+  ];
+  flights.forEach(f => L.polyline(f,{color:'#9b72cf',weight:1.8,dashArray:'5,7',opacity:.6}).addTo(map2));
+
+  // — PATIENT EVACUATION (red dashed) —
+  L.polyline([[-7.95,-14.37],[-26.20,28.04]],
+    {color:'#e63946',weight:1.5,dashArray:'4,8',opacity:.55}).addTo(map2);
 
   const popup = (label, detail) =>
-    `<div style="font-family:Inter,sans-serif;background:#14141f;color:#f5f5f7;padding:14px 16px;border-radius:10px;min-width:210px;font-size:.82rem;border:1px solid rgba(255,255,255,.08);">
-      <strong style="font-size:.9rem;display:block;margin-bottom:4px;">${label}</strong>
-      <span style="color:#8e8e9a;font-size:.76rem;line-height:1.5;">${detail}</span>
+    `<div style="font-family:Inter,sans-serif;background:#0e1117;color:#f5f5f7;padding:14px 16px;border-radius:10px;min-width:220px;font-size:.82rem;border:1px solid rgba(255,255,255,.1);">
+      <strong style="font-size:.9rem;display:block;margin-bottom:5px;">${label}</strong>
+      <span style="color:#8e8e9a;font-size:.76rem;line-height:1.55;">${detail}</span>
     </div>`;
 
-  function numMkr(lat, lng, color, badge, label, detail) {
+  function mkr(lat, lng, color, badge, sz, label, detail) {
+    const s = sz || 36;
     const ic = L.divIcon({
-      html:`<div style="
-        position:relative;width:38px;height:38px;
-        background:${color};border-radius:50%;
-        border:2.5px solid rgba(255,255,255,.85);
-        box-shadow:0 0 0 4px ${color}44,0 2px 12px ${color}66;
-        display:flex;align-items:center;justify-content:center;
-        font-family:Inter,sans-serif;font-weight:800;font-size:.75rem;color:#fff;
-        cursor:pointer;">
-        ${badge}
-      </div>`,
-      iconSize:[38,38], iconAnchor:[19,19], className:''
+      html:`<div style="width:${s}px;height:${s}px;background:${color};border-radius:50%;border:2px solid rgba(255,255,255,.8);box-shadow:0 0 0 3px ${color}55,0 2px 10px ${color}77;display:flex;align-items:center;justify-content:center;font-family:Inter,sans-serif;font-weight:800;font-size:${s>34?'.76':'0.65'}rem;color:#fff;cursor:pointer;">${badge}</div>`,
+      iconSize:[s,s], iconAnchor:[s/2,s/2], className:''
     });
     L.marker([lat,lng],{icon:ic}).addTo(map2).bindPopup(popup(label,detail));
   }
 
-  numMkr(-34.61,-58.39,'#e63946','⚠','Buenos Aires, Argentina','Probable origin of contagion · WHO under investigation');
-  numMkr(15.12,-23.60,'#f4a261','⚓','Cape Verde','MV Hondius previously anchored here');
-  numMkr(28.29,-16.62,'#4895ef','✈','Tenerife, Canary Islands','Current destination · No free disembarkation');
-  numMkr(-26.20,28.04,'#e63946','1','Johannesburg, South Africa','1 patient critical — ICU admission');
-  numMkr(40.42,-3.70,'#9b72cf','14','Madrid, Spain','Hospital Gómez Ulla · 14 Spanish nationals in quarantine');
+  // Origin & route stops
+  mkr(-54.80,-68.30,'#e63946','⚑',32,'Ushuaia, Argentina','Departure point · April 1, 2026 · Journey start');
+  mkr(-15.94,-5.72, '#f4a261','1',34,'Saint Helena (Jamestown)','Passengers disembarked · Under epidemiological contact tracing');
+  mkr(-7.95,-14.37, '#f4a261','1',34,'Ascension Island','1 passenger medically evacuated · April 27, 2026');
+  mkr(15.12,-23.60, '#f4a261','⚓',36,'Praia, Cape Verde','MV Hondius anchored here · Health authorities boarded');
+  mkr(28.29,-16.62, '#22c55e','✈',38,'Canary Islands (Granadilla)','Destination port · No free disembarkation · Protocols active');
 
-  // Animated ship marker
+  // Cases / repatriation in Europe
+  mkr(40.42,-3.70,  '#9b72cf','14',40,'Madrid, Spain','Hospital Gómez Ulla · 14 Spanish nationals quarantine');
+  mkr(52.37, 4.90,  '#9b72cf','NL',34,'Amsterdam, Netherlands','Dutch nationals repatriation coordination');
+  mkr(51.51,-0.13,  '#9b72cf','UK',34,'London, United Kingdom','UK nationals under contact tracing · Repatriation');
+  mkr(50.11, 8.68,  '#e63946','DE',36,'Frankfurt, Germany','German national deceased aboard · Cases under investigation');
+  mkr(47.38, 8.54,  '#f4a261','1',34,'Zurich, Switzerland','1 Swiss patient treated after disembarking before alert');
+
+  // Critical patient
+  mkr(-26.20,28.04, '#e63946','1',38,'Johannesburg, South Africa','1 patient in critical condition · ICU admission');
+
+  // Ship live
   const shipIc = L.divIcon({
-    html:`<div style="position:relative;width:48px;height:48px;display:flex;align-items:center;justify-content:center;">
-      <div style="position:absolute;width:48px;height:48px;background:rgba(72,149,239,.35);border-radius:50%;animation:shipPulse 2s ease-out infinite;"></div>
-      <div style="position:absolute;width:32px;height:32px;background:rgba(72,149,239,.2);border-radius:50%;animation:shipPulse 2s ease-out infinite .4s;"></div>
-      <div style="position:relative;width:28px;height:28px;background:#1a6ef5;border-radius:50%;border:2.5px solid #fff;box-shadow:0 0 12px #4895ef;display:flex;align-items:center;justify-content:center;font-size:13px;">🚢</div>
+    html:`<div style="position:relative;width:50px;height:50px;display:flex;align-items:center;justify-content:center;">
+      <div style="position:absolute;width:50px;height:50px;background:rgba(34,197,94,.3);border-radius:50%;animation:shipPulse 2s ease-out infinite;"></div>
+      <div style="position:absolute;width:34px;height:34px;background:rgba(34,197,94,.18);border-radius:50%;animation:shipPulse 2s ease-out infinite .5s;"></div>
+      <div style="position:relative;width:28px;height:28px;background:#16a34a;border-radius:50%;border:2.5px solid #fff;box-shadow:0 0 14px #22c55e;display:flex;align-items:center;justify-content:center;font-size:13px;">🚢</div>
     </div>`,
-    iconSize:[48,48], iconAnchor:[24,24], className:''
+    iconSize:[50,50], iconAnchor:[25,25], className:''
   });
   L.marker([21.5,-20.5],{icon:shipIc,zIndexOffset:1000}).addTo(map2)
-    .bindPopup(popup('🚢 MV Hondius — At Sea','En route to Tenerife · 147 people aboard · 8 cases confirmed'));
+    .bindPopup(popup('🚢 MV Hondius · LIVE','En route to Tenerife · 147 aboard · 8 cases · SHIP LIVE'));
 
-  // Map legend
+  // Legend
   const legend = L.control({position:'bottomleft'});
   legend.onAdd = () => {
     const d = L.DomUtil.create('div');
-    d.innerHTML = `<div style="background:rgba(11,11,11,.88);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:8px 12px;font-family:Inter,sans-serif;font-size:.68rem;color:#aaa;line-height:1.8;">
-      <div style="display:flex;align-items:center;gap:6px;"><span style="display:inline-block;width:20px;height:2px;background:#f4a261;border-top:2px dashed #f4a261;"></span> Ship route</div>
-      <div style="display:flex;align-items:center;gap:6px;"><span style="display:inline-block;width:20px;height:2px;background:#9b72cf;border-top:2px dashed #9b72cf;"></span> Repatriation</div>
-      <div style="display:flex;align-items:center;gap:6px;"><span style="display:inline-block;width:20px;height:2px;background:#e63946;border-top:2px dashed #e63946;"></span> Patient transport</div>
+    d.innerHTML = `<div style="background:rgba(10,10,16,.9);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:9px 13px;font-family:Inter,sans-serif;font-size:.67rem;color:#aaa;line-height:2;">
+      <div style="display:flex;align-items:center;gap:7px;"><span style="width:18px;border-top:2px dashed #f4a261;display:inline-block;"></span>Ship route</div>
+      <div style="display:flex;align-items:center;gap:7px;"><span style="width:18px;border-top:2px dashed #9b72cf;display:inline-block;"></span>Repatriation / flights</div>
+      <div style="display:flex;align-items:center;gap:7px;"><span style="width:18px;border-top:2px dashed #e63946;display:inline-block;"></span>Patient evacuation</div>
+      <div style="display:flex;align-items:center;gap:7px;"><span style="width:10px;height:10px;background:#22c55e;border-radius:50%;display:inline-block;"></span>Ship live</div>
+      <div style="display:flex;align-items:center;gap:7px;"><span style="width:10px;height:10px;background:#e63946;border-radius:50%;display:inline-block;"></span>Confirmed / death</div>
+      <div style="display:flex;align-items:center;gap:7px;"><span style="width:10px;height:10px;background:#f4a261;border-radius:50%;display:inline-block;"></span>Exposure / stop</div>
+      <div style="display:flex;align-items:center;gap:7px;"><span style="width:10px;height:10px;background:#9b72cf;border-radius:50%;display:inline-block;"></span>Repatriation point</div>
     </div>`;
     return d;
   };
@@ -1261,12 +1282,20 @@ function buildGlobe(geo, mat) {
   globe3 = new THREE.Mesh(geo, mat);
   scene3.add(globe3);
 
-  // Route arcs
-  arcLine(-34.61,-58.39, 15.12,-23.60, '#f4a261'); // Argentina → Cape Verde
-  arcLine(15.12,-23.60,  21.5,-20.5,   '#f4a261'); // Cape Verde → Ship
-  arcLine(21.5,-20.5,    28.29,-16.62, '#f4a261'); // Ship → Tenerife
+  // Ship route arcs
+  arcLine(-54.80,-68.30, -15.94,-5.72,  '#f4a261'); // Ushuaia → St Helena
+  arcLine(-15.94,-5.72,  -7.95,-14.37,  '#f4a261'); // St Helena → Ascension
+  arcLine(-7.95,-14.37,   15.12,-23.60, '#f4a261'); // Ascension → Cape Verde
+  arcLine(15.12,-23.60,   21.5,-20.5,   '#f4a261'); // Cape Verde → Ship
+  arcLine(21.5,-20.5,     28.29,-16.62, '#f4a261'); // Ship → Tenerife
+  // Repatriation arcs
   arcLine(28.29,-16.62,  40.42,-3.70,  '#9b72cf'); // Tenerife → Madrid
-  arcLine(-34.61,-58.39, -26.20,28.04, '#e6394666'); // Argentina → Johannesburg
+  arcLine(28.29,-16.62,  52.37,4.90,   '#9b72cf'); // Tenerife → Amsterdam
+  arcLine(28.29,-16.62,  51.51,-0.13,  '#9b72cf'); // Tenerife → London
+  arcLine(15.12,-23.60,  50.11,8.68,   '#9b72cf'); // Cape Verde → Frankfurt
+  arcLine(15.12,-23.60,  47.38,8.54,   '#9b72cf'); // Cape Verde → Zurich
+  // Patient evacuation
+  arcLine(-7.95,-14.37, -26.20,28.04, '#e63946'); // Ascension → Johannesburg
 
   GLOBE_POINTS.forEach(p => {
     const pos  = ll2xyz(p.lat, p.lng, 1.015);
