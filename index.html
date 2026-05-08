@@ -915,6 +915,7 @@
 
 <!-- ===== SCRIPTS ===== -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.134.0/build/three.min.js"></script>
 
 <script>
@@ -1188,6 +1189,37 @@ function init2D() {
   });
   L.marker([21.5,-20.5],{icon:shipIc,zIndexOffset:1000}).addTo(map2)
     .bindPopup(popup('🚢 MV Hondius · LIVE','En route to Tenerife · 147 aboard · 8 cases · SHIP LIVE'));
+
+  // Country highlight polygons (TopoJSON world-atlas)
+  const AFFECTED = {
+    32:  { color:'#e63946', label:'Argentina' },        // origin
+    710: { color:'#e63946', label:'South Africa' },     // ICU patient
+    276: { color:'#9b72cf', label:'Germany' },          // death + cases
+    528: { color:'#9b72cf', label:'Netherlands' },      // repatriation
+    826: { color:'#9b72cf', label:'United Kingdom' },   // repatriation
+    724: { color:'#9b72cf', label:'Spain' },            // quarantine
+    756: { color:'#f4a261', label:'Switzerland' },      // case
+  };
+  fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json')
+    .then(r => r.json())
+    .then(world => {
+      const features = topojson.feature(world, world.objects.countries).features;
+      features.forEach(f => {
+        const info = AFFECTED[+f.id];
+        if (!info) return;
+        L.geoJSON(f, {
+          style: {
+            fillColor: info.color,
+            fillOpacity: 0.13,
+            color: info.color,
+            weight: 1.5,
+            dashArray: '6,5',
+            opacity: 0.65
+          }
+        }).addTo(map2);
+      });
+    })
+    .catch(() => {}); // silently fail if offline
 
   // Legend
   const legend = L.control({position:'bottomleft'});
