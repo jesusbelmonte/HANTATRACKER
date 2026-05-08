@@ -389,6 +389,22 @@
   </div>
 </div>
 
+<!-- ===== FULLSCREEN MAP OVERLAY ===== -->
+<div id="fullmap-overlay" style="display:none;position:fixed;inset:0;z-index:8000;background:#0b0b0b;flex-direction:column;">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:rgba(11,11,11,.95);border-bottom:1px solid rgba(255,255,255,.08);flex-shrink:0;">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div style="width:8px;height:8px;background:#22c55e;border-radius:50%;box-shadow:0 0 6px #22c55e;animation:shipPulse 2s infinite;"></div>
+      <span style="font-family:Inter,sans-serif;font-size:.85rem;font-weight:700;color:#fff;">MV Hondius — Live Outbreak Map</span>
+      <span style="font-family:Inter,sans-serif;font-size:.72rem;color:#8e8e9a;">May 8, 2026 · 8 cases · 3 deaths</span>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;">
+      <button onclick="replayRouteFS()" style="background:rgba(244,162,97,.12);border:1px solid rgba(244,162,97,.4);color:#f4a261;font-size:.72rem;font-weight:700;padding:6px 12px;border-radius:7px;cursor:pointer;" id="replay-fs-btn">▶ Replay</button>
+      <button onclick="closeFullMap()" style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:#fff;font-size:.85rem;font-weight:700;padding:6px 14px;border-radius:7px;cursor:pointer;">✕ Close</button>
+    </div>
+  </div>
+  <div id="fullmap" style="flex:1;width:100%;"></div>
+</div>
+
 <!-- ===== BREAKING TICKER ===== -->
 <div class="ticker">
   <div class="wrap ticker-in">
@@ -484,6 +500,7 @@
           <button class="tbtn"    id="btn3d" onclick="switchMap('3d')" data-en="3D Globe" data-es="Globo 3D">3D Globe</button>
         </div>
         <button id="replay-btn" onclick="replayRoute()" data-en="▶ Replay Route" data-es="▶ Reproducir ruta" style="background:rgba(244,162,97,.12);border:1px solid rgba(244,162,97,.4);color:#f4a261;font-size:.75rem;font-weight:700;padding:7px 14px;border-radius:8px;cursor:pointer;transition:background .2s;white-space:nowrap;">▶ Replay Route</button>
+        <button onclick="openFullMap()" data-en="⤢ Full Map" data-es="⤢ Mapa completo" style="background:rgba(72,149,239,.12);border:1px solid rgba(72,149,239,.4);color:#4895ef;font-size:.75rem;font-weight:700;padding:7px 14px;border-radius:8px;cursor:pointer;transition:background .2s;white-space:nowrap;">⤢ Full Map</button>
       </div>
     </div>
 
@@ -1134,6 +1151,109 @@ const ROUTE_WP = [
   { lat:15.12,  lng:-23.60, label:'Cape Verde',            date:'May 2'  },
   { lat:21.50,  lng:-20.50, label:'At sea',                date:'May 8'  },
 ];
+
+// ============================================================
+//  FULLSCREEN MAP
+// ============================================================
+let mapFS = null;
+let animTimerFS = null, animLayerFS = null, animMarkerFS = null;
+
+function buildMapLayers(m) {
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    attribution:'© OpenStreetMap © CARTO', subdomains:'abcd', maxZoom:19
+  }).addTo(m);
+
+  L.polyline([[-54.80,-68.30],[-51.70,-57.85],[-15.94,-5.72],[-7.95,-14.37],[15.12,-23.60],[21.5,-20.5],[28.29,-16.62]],
+    {color:'#f4a261',weight:2.5,dashArray:'10,7',opacity:.9}).addTo(m);
+
+  [[[28.29,-16.62],[40.42,-3.70]],[[28.29,-16.62],[52.37,4.90]],[[28.29,-16.62],[51.51,-0.13]],
+   [[15.12,-23.60],[50.11,8.68]],[[15.12,-23.60],[47.38,8.54]]].forEach(f =>
+    L.polyline(f,{color:'#9b72cf',weight:1.8,dashArray:'5,7',opacity:.6}).addTo(m));
+
+  L.polyline([[-7.95,-14.37],[-26.20,28.04]],{color:'#e63946',weight:1.5,dashArray:'4,8',opacity:.55}).addTo(m);
+
+  const pp = (label,detail) => `<div style="font-family:Inter,sans-serif;background:#0e1117;color:#f5f5f7;padding:14px 16px;border-radius:10px;min-width:220px;font-size:.82rem;border:1px solid rgba(255,255,255,.1);"><strong style="display:block;margin-bottom:5px;">${label}</strong><span style="color:#8e8e9a;font-size:.76rem;">${detail}</span></div>`;
+
+  function mk(lat,lng,color,badge,sz,label,detail){
+    const s=sz||36;
+    L.marker([lat,lng],{icon:L.divIcon({html:`<div style="width:${s}px;height:${s}px;background:${color};border-radius:50%;border:2px solid rgba(255,255,255,.8);box-shadow:0 0 0 3px ${color}55;display:flex;align-items:center;justify-content:center;font-family:Inter,sans-serif;font-weight:800;font-size:.75rem;color:#fff;">${badge}</div>`,iconSize:[s,s],iconAnchor:[s/2,s/2],className:''})}).addTo(m).bindPopup(pp(label,detail));
+  }
+  mk(-54.80,-68.30,'#e63946','⚑',32,'Ushuaia, Argentina','Departure · April 1, 2026');
+  mk(-15.94,-5.72,'#f4a261','1',34,'Saint Helena','Passengers disembarked · contact tracing');
+  mk(-7.95,-14.37,'#f4a261','1',34,'Ascension Island','1 passenger evacuated · April 27');
+  mk(15.12,-23.60,'#f4a261','⚓',36,'Cape Verde','Ship anchored · health authorities boarded');
+  mk(28.29,-16.62,'#22c55e','✈',38,'Canary Islands','Destination port · no free disembarkation');
+  mk(40.42,-3.70,'#9b72cf','14',40,'Madrid, Spain','Hospital Gómez Ulla · 14 Spanish nationals');
+  mk(52.37,4.90,'#9b72cf','NL',34,'Amsterdam, Netherlands','Dutch nationals repatriation');
+  mk(51.51,-0.13,'#9b72cf','UK',34,'London, United Kingdom','UK nationals contact tracing');
+  mk(50.11,8.68,'#e63946','DE',36,'Frankfurt, Germany','German national deceased · cases investigated');
+  mk(47.38,8.54,'#f4a261','1',34,'Zurich, Switzerland','1 Swiss patient treated post-disembark');
+  mk(-26.20,28.04,'#e63946','1',38,'Johannesburg, South Africa','1 patient critical — ICU');
+
+  L.marker([21.5,-20.5],{icon:L.divIcon({html:`<div style="position:relative;width:50px;height:50px;display:flex;align-items:center;justify-content:center;"><div style="position:absolute;width:50px;height:50px;background:rgba(34,197,94,.3);border-radius:50%;animation:shipPulse 2s ease-out infinite;"></div><div style="position:relative;width:28px;height:28px;background:#16a34a;border-radius:50%;border:2.5px solid #fff;box-shadow:0 0 14px #22c55e;display:flex;align-items:center;justify-content:center;font-size:13px;">🚢</div></div>`,iconSize:[50,50],iconAnchor:[25,25],className:''}),zIndexOffset:1000}).addTo(m)
+    .bindPopup(pp('🚢 MV Hondius · LIVE','En route to Tenerife · 147 aboard · 8 cases'));
+
+  const AFFECTED={32:{color:'#e63946'},710:{color:'#e63946'},276:{color:'#9b72cf'},528:{color:'#9b72cf'},826:{color:'#9b72cf'},724:{color:'#9b72cf'},756:{color:'#f4a261'}};
+  fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json')
+    .then(r=>r.json()).then(world=>{
+      topojson.feature(world,world.objects.countries).features.forEach(f=>{
+        const info=AFFECTED[+f.id]; if(!info) return;
+        L.geoJSON(f,{style:{fillColor:info.color,fillOpacity:.13,color:info.color,weight:1.5,dashArray:'6,5',opacity:.65}}).addTo(m);
+      });
+    }).catch(()=>{});
+}
+
+function openFullMap() {
+  const overlay = document.getElementById('fullmap-overlay');
+  overlay.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  setTimeout(() => {
+    if (!mapFS) {
+      mapFS = L.map('fullmap', {center:[20,-10],zoom:3,minZoom:1,maxZoom:8});
+      buildMapLayers(mapFS);
+    } else {
+      mapFS.invalidateSize();
+    }
+  }, 80);
+}
+
+function closeFullMap() {
+  document.getElementById('fullmap-overlay').style.display = 'none';
+  document.body.style.overflow = '';
+  if (animTimerFS) { clearInterval(animTimerFS); animTimerFS = null; }
+  if (animLayerFS) { mapFS.removeLayer(animLayerFS); animLayerFS = null; }
+  if (animMarkerFS) { mapFS.removeLayer(animMarkerFS); animMarkerFS = null; }
+}
+
+function replayRouteFS() {
+  if (!mapFS) return;
+  if (animTimerFS) { clearInterval(animTimerFS); animTimerFS = null; }
+  if (animLayerFS) { mapFS.removeLayer(animLayerFS); animLayerFS = null; }
+  if (animMarkerFS) { mapFS.removeLayer(animMarkerFS); animMarkerFS = null; }
+
+  const path = [];
+  for (let i = 0; i < ROUTE_WP.length - 1; i++) {
+    const a = ROUTE_WP[i], b = ROUTE_WP[i+1];
+    for (let s = 0; s < 60; s++) {
+      const t = s/60;
+      path.push({lat:a.lat+(b.lat-a.lat)*t, lng:a.lng+(b.lng-a.lng)*t, wp:s===0?a:null});
+    }
+  }
+  path.push({lat:ROUTE_WP[ROUTE_WP.length-1].lat,lng:ROUTE_WP[ROUTE_WP.length-1].lng,wp:ROUTE_WP[ROUTE_WP.length-1]});
+
+  animLayerFS = L.polyline([],{color:'#f4a261',weight:3.5,opacity:1}).addTo(mapFS);
+  animMarkerFS = L.marker([ROUTE_WP[0].lat,ROUTE_WP[0].lng],{icon:L.divIcon({html:`<div style="width:26px;height:26px;background:#1a6ef5;border-radius:50%;border:2.5px solid #fff;box-shadow:0 0 12px #4895ef;display:flex;align-items:center;justify-content:center;font-size:12px;">🚢</div>`,iconSize:[26,26],iconAnchor:[13,13],className:''}),zIndexOffset:2000}).addTo(mapFS);
+
+  mapFS.fitBounds([[-56,-72],[29,-4]],{animate:true,duration:0.8});
+  const drawn=[], btn=document.getElementById('replay-fs-btn');
+  btn.textContent='■ Stop'; let frame=0;
+  animTimerFS = setInterval(()=>{
+    if(frame>=path.length){clearInterval(animTimerFS);animTimerFS=null;btn.textContent='▶ Replay';return;}
+    const p=path[frame]; drawn.push([p.lat,p.lng]);
+    animLayerFS.setLatLngs(drawn); animMarkerFS.setLatLng([p.lat,p.lng]);
+    frame+=3;
+  },25);
+}
 
 function replayRoute() {
   if (!map2) return;
