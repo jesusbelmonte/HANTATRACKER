@@ -276,6 +276,24 @@
     .tl-title { font-size: .91rem; font-weight: 700; margin-bottom: 4px; }
     .tl-body  { font-size: .8rem; color: var(--sub); line-height: 1.67; }
 
+    /* ===== LATEST NEWS ===== */
+    #latest { background: var(--bg); }
+    .news-feed { display: flex; flex-direction: column; gap: 14px; margin-top: 28px; }
+    .nc { background: var(--glass); border: 1px solid var(--gb); border-radius: var(--rl); padding: 18px 20px 16px; backdrop-filter: blur(8px); border-left: 3px solid var(--bdr); transition: border-left-color .2s; }
+    .nc.critical { border-left-color: var(--red); }
+    .nc.update   { border-left-color: var(--amber); }
+    .nc.info     { border-left-color: var(--teal); }
+    .nc-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+    .nc-date { font-size: .64rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); }
+    .nc-src  { font-size: .62rem; background: var(--bg2); border: 1px solid var(--bdr); color: var(--sub); padding: 2px 8px; border-radius: 100px; }
+    .nc-badge { font-size: .6rem; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; padding: 2px 8px; border-radius: 100px; }
+    .nc-badge.critical { background: var(--rdim); color: var(--red); }
+    .nc-badge.update   { background: var(--adim); color: var(--amber); }
+    .nc-badge.info     { background: var(--tdim); color: var(--teal); }
+    .nc-headline { font-size: .92rem; font-weight: 700; margin-bottom: 6px; line-height: 1.4; }
+    .nc-body { font-size: .8rem; color: var(--sub); line-height: 1.72; }
+    .nc-body strong { color: var(--white); }
+
     /* ===== DASHBOARD ===== */
     #dashboard { background: var(--bg2); }
     .dash-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; }
@@ -365,6 +383,7 @@
       <a href="#transmission" data-en="Transmission" data-es="Transmisión">Transmission</a>
       <a href="#risk" data-en="Risk" data-es="Riesgo">Risk</a>
       <a href="#timeline" data-en="Timeline" data-es="Cronología">Timeline</a>
+      <a href="#latest" data-en="Latest" data-es="Últimas noticias" style="color:var(--red);font-weight:700;">Latest</a>
       <a href="#faq">FAQ</a>
     </nav>
     <div class="hdr-right">
@@ -803,6 +822,17 @@
 </section>
 
 <!-- ===== FAQ ===== -->
+<section id="latest">
+  <div class="wrap">
+    <div class="fu">
+      <p class="sec-lbl" style="color:var(--red);" data-en="● Live Updates" data-es="● Actualizaciones en vivo">● Live Updates</p>
+      <h2 class="sec-title" data-en="Latest News" data-es="Últimas Noticias">Latest News</h2>
+      <p class="sec-sub" data-en="Verified updates from WHO, Spain Ministry of Health and international media." data-es="Actualizaciones verificadas con la OMS, Sanidad España y medios internacionales.">Verified updates from WHO, Spain Ministry of Health and international media.</p>
+    </div>
+    <div class="news-feed fu d1" id="news-list"></div>
+  </div>
+</section>
+
 <section id="faq">
   <div class="wrap">
     <div class="fu">
@@ -863,6 +893,77 @@
 'use strict';
 
 // ============================================================
+//  NEWS DATA — add new entries at the TOP of the array daily
+// ============================================================
+const NEWS = [
+  {
+    date:'May 8, 2026', date_es:'8 mayo 2026', type:'critical',
+    headline_en:'WHO confirms 8 cases: 5 lab-confirmed, 3 suspected — 3 deaths',
+    headline_es:'La OMS confirma 8 casos: 5 confirmados por laboratorio, 3 sospechosos — 3 fallecidos',
+    body_en:'The latest figures confirm 8 cases linked to MV Hondius. Five are laboratory-confirmed Andes hantavirus; three remain under investigation as suspected cases. Three deaths confirmed. <strong>No new symptomatic cases among passengers currently aboard.</strong>',
+    body_es:'Las últimas cifras confirman 8 casos vinculados al MV Hondius. Cinco son hantavirus Andes confirmados por laboratorio; tres permanecen bajo investigación como sospechosos. Tres fallecidos confirmados. <strong>No hay nuevos casos sintomáticos entre los pasajeros actualmente a bordo.</strong>',
+    source:'WHO / Infosalus'
+  },
+  {
+    date:'May 8, 2026', date_es:'8 mayo 2026', type:'update',
+    headline_en:'Ship heading to port of Granadilla, Tenerife — sanitary protocols active',
+    headline_es:'El barco se dirige al puerto de Granadilla, Tenerife — protocolos sanitarios activos',
+    body_en:'MV Hondius is en route to the port of Granadilla (Tenerife) under continuous medical surveillance. Passengers will not disembark freely. Each country will receive its nationals under preventive quarantine. Spain has designated <strong>Hospital Gómez Ulla, Madrid</strong> for its 14 nationals.',
+    body_es:'El MV Hondius navega hacia el puerto de Granadilla (Tenerife) con vigilancia médica continua. Los pasajeros no desembarcarán libremente. Cada país recibirá a sus nacionales en cuarentena preventiva. España ha designado el <strong>Hospital Gómez Ulla, Madrid</strong> para sus 14 nacionales.',
+    source:'Cadena SER / Infobae'
+  },
+  {
+    date:'May 8, 2026', date_es:'8 mayo 2026', type:'critical',
+    headline_en:'Cases now spread across 6 countries: S. Africa, Netherlands, Germany, St. Helena, Spain, Switzerland',
+    headline_es:'Casos repartidos en 6 países: Sudáfrica, Países Bajos, Alemania, Santa Elena, España y Suiza',
+    body_en:'Affected individuals are distributed internationally. Notable cases include: a passenger <strong>evacuated at Ascension Island on April 27</strong>; a <strong>German national who died aboard</strong>; and a <strong>Swiss citizen treated in Zurich</strong> after disembarking before the alert was issued. Passengers who disembarked at St. Helena are under epidemiological tracing.',
+    body_es:'Los afectados se encuentran distribuidos internacionalmente. Casos destacados: un pasajero <strong>evacuado en la isla de Ascensión el 27 de abril</strong>; un <strong>ciudadano alemán fallecido a bordo</strong>; y un <strong>ciudadano suizo atendido en Zúrich</strong> tras desembarcar antes de la alerta. Los pasajeros que desembarcaron en Santa Elena están bajo rastreo epidemiológico.',
+    source:'Heraldo / Caracol / Wikipedia'
+  },
+  {
+    date:'May 8, 2026', date_es:'8 mayo 2026', type:'update',
+    headline_en:'Two crew members with respiratory symptoms — one in serious condition',
+    headline_es:'Dos tripulantes con síntomas respiratorios — uno en estado grave',
+    body_en:'Among the affected are two crew members presenting respiratory symptoms. One is reported to be in serious condition. The WHO and Spanish authorities are coordinating their management and evacuation logistics.',
+    body_es:'Entre los afectados se encuentran dos tripulantes con síntomas respiratorios. Uno de ellos se encuentra en estado grave. La OMS y las autoridades españolas coordinan su atención y la logística de evacuación.',
+    source:'Cadena SER / OMS'
+  },
+  {
+    date:'May 8, 2026', date_es:'8 mayo 2026', type:'info',
+    headline_en:'Origin: journey began in Ushuaia, Argentina on April 1 — infection likely pre-boarding',
+    headline_es:'Origen: el viaje comenzó en Ushuaia, Argentina el 1 de abril — infección probablemente previa al embarque',
+    body_en:'The WHO considers it likely that infection occurred <strong>outside the ship</strong>, before boarding or during early port stops. The Andes hantavirus strain is endemic in Argentina and southern South America. Its incubation period of up to 45 days means further cases may still emerge among the 147 people aboard.',
+    body_es:'La OMS considera probable que la infección se produjera <strong>fuera del barco</strong>, antes del embarque o durante escalas iniciales. La cepa Andes es endémica en Argentina y el sur de América del Sur. Su período de incubación de hasta 45 días implica que aún pueden surgir más casos entre las 147 personas a bordo.',
+    source:'20minutos / OMS'
+  },
+  {
+    date:'May 8, 2026', date_es:'8 mayo 2026', type:'info',
+    headline_en:'Spain: risk for general population classified as "very low" — no community transmission',
+    headline_es:'España: riesgo para la población general calificado como "muy bajo" — sin transmisión comunitaria',
+    body_en:'Spain\'s Ministry of Health insists the risk to the general Spanish population is very low. The focus remains on contact tracing, evacuation of symptomatic individuals, and coordination with countries where patients are already being treated. A COVID-19-style pandemic scenario is explicitly ruled out.',
+    body_es:'El Ministerio de Sanidad insiste en que el riesgo para la población española es muy bajo. El foco sigue en el rastreo de contactos, la evacuación de sintomáticos y la coordinación con los países donde ya se atienden pacientes. Se descarta explícitamente un escenario pandémico al estilo COVID-19.',
+    source:'Sanidad España / YouTube'
+  }
+];
+
+function renderNews() {
+  const el = document.getElementById('news-list');
+  if (!el) return;
+  const lang = typeof currentLang !== 'undefined' ? currentLang : 'en';
+  const badgeLabel = { critical:{en:'Critical',es:'Crítico'}, update:{en:'Update',es:'Actualización'}, info:{en:'Info',es:'Info'} };
+  el.innerHTML = NEWS.map(n => `
+    <div class="nc ${n.type}">
+      <div class="nc-meta">
+        <span class="nc-date">${lang==='es'?n.date_es:n.date}</span>
+        <span class="nc-badge ${n.type}">${badgeLabel[n.type][lang]}</span>
+        <span class="nc-src">${n.source}</span>
+      </div>
+      <div class="nc-headline">${lang==='es'?n.headline_es:n.headline_en}</div>
+      <div class="nc-body">${lang==='es'?n.body_es:n.body_en}</div>
+    </div>`).join('');
+}
+
+// ============================================================
 //  GLOBE DATA — locations for the 3D globe
 // ============================================================
 const GLOBE_POINTS = [
@@ -909,7 +1010,8 @@ function toggleLang() {
   const btn = document.getElementById('lang-btn');
   btn.textContent = currentLang === 'en' ? 'ES' : 'EN';
   btn.classList.toggle('active', currentLang === 'es');
-  renderFAQ(); // re-render FAQ in new language
+  renderFAQ();
+  renderNews();
 }
 
 function applyLang(lang) {
@@ -1229,10 +1331,11 @@ document.getElementById('hamburger').addEventListener('click', () => {
 // ============================================================
 document.addEventListener('DOMContentLoaded', () => {
   renderFAQ();
+  renderNews();
   initScrollAnim();
   initIncubBar();
   init2D();
-  applyLang('en'); // ensure correct initial state
+  applyLang('en');
 });
 </script>
 </body>
