@@ -1365,19 +1365,12 @@ function init2D() {
     [15.12,-23.60],[21.5,-20.5],[28.29,-16.62]
   ], { color:'#f4a261', weight:2.5, dashArray:'10,7', opacity:.9 }).addTo(map2);
 
-  // — REPATRIATION / FLIGHT ARCS (purple dashed) —
-  const flights = [
-    [[28.29,-16.62],[40.42,-3.70]],   // Tenerife → Madrid
-    [[28.29,-16.62],[52.37,4.90]],    // Tenerife → Amsterdam
-    [[28.29,-16.62],[51.51,-0.13]],   // Tenerife → London
-    [[15.12,-23.60],[50.11,8.68]],    // Cape Verde → Frankfurt
-    [[15.12,-23.60],[47.38,8.54]],    // Cape Verde → Zurich
-  ];
-  flights.forEach(f => L.polyline(f,{color:'#9b72cf',weight:1.8,dashArray:'5,7',opacity:.6}).addTo(map2));
+  // — SINGLE REPATRIATION LINE (Tenerife → Europe, subtle) —
+  L.polyline([[28.29,-16.62],[47.00,8.00]], {color:'#9b72cf',weight:1,dashArray:'4,8',opacity:.3}).addTo(map2);
 
-  // — PATIENT EVACUATION (red dashed) —
+  // — PATIENT EVACUATION (red dashed, subtle) —
   L.polyline([[-7.95,-14.37],[-26.20,28.04]],
-    {color:'#e63946',weight:1.5,dashArray:'4,8',opacity:.55}).addTo(map2);
+    {color:'#e63946',weight:1.2,dashArray:'4,9',opacity:.4}).addTo(map2);
 
   const popup = (label, detail) =>
     `<div style="font-family:Inter,sans-serif;background:#0e1117;color:#f5f5f7;padding:14px 16px;border-radius:10px;min-width:220px;font-size:.82rem;border:1px solid rgba(255,255,255,.1);">
@@ -1401,18 +1394,18 @@ function init2D() {
   mkr(15.12,-23.60, '#f4a261','⚓',36,'Praia, Cape Verde','MV Hondius anchored here · Health authorities boarded');
   mkr(28.29,-16.62, '#22c55e','✈',38,'Canary Islands (Granadilla)','Destination port · No free disembarkation · Protocols active');
 
-  // Cases / repatriation in Europe
-  mkr(40.42,-3.70,  '#9b72cf','14',40,'Madrid, Spain','Hospital Gómez Ulla · 14 Spanish nationals quarantine');
-  mkr(52.37, 4.90,  '#9b72cf','NL',34,'Amsterdam, Netherlands','Dutch nationals repatriation coordination');
-  mkr(51.51,-0.13,  '#9b72cf','UK',34,'London, United Kingdom','UK nationals under contact tracing · Repatriation');
-  mkr(50.11, 8.68,  '#e63946','DE',36,'Frankfurt, Germany','German national deceased aboard · Cases under investigation');
-  mkr(47.38, 8.54,  '#f4a261','1',34,'Zurich, Switzerland','1 Swiss patient treated after disembarking before alert');
+  // Cases / repatriation in Europe (smaller, less intrusive)
+  mkr(40.42,-3.70,  '#9b72cf','14',34,'Madrid, Spain','Hospital Gómez Ulla · 14 Spanish nationals quarantine');
+  mkr(52.37, 4.90,  '#9b72cf','NL',28,'Amsterdam, Netherlands','Dutch nationals repatriation coordination');
+  mkr(51.51,-0.13,  '#9b72cf','UK',28,'London, United Kingdom','UK nationals under contact tracing · Repatriation');
+  mkr(50.11, 8.68,  '#e63946','DE',30,'Frankfurt, Germany','German national deceased aboard · Cases under investigation');
+  mkr(47.38, 8.54,  '#f4a261','CH',28,'Zurich, Switzerland','1 Swiss patient treated after disembarking before alert');
 
   // Critical patient
-  mkr(-26.20,28.04, '#e63946','1',38,'Johannesburg, South Africa','1 patient in critical condition · ICU admission');
-  // New May 9 contacts in Spain
-  mkr(41.38,2.17,'#f4a261','C',34,'Barcelona, Catalonia','2 contacts · asymptomatic · preventive quarantine · linked to flight of deceased Dutch passenger');
-  mkr(38.35,-0.48,'#f4a261','!',34,'Alicante, Spain','1 contact · mild compatible symptoms · pending diagnostic test');
+  mkr(-26.20,28.04, '#e63946','1',34,'Johannesburg, South Africa','1 patient in critical condition · ICU admission');
+  // May 9 contacts in Spain
+  mkr(41.38,2.17,  '#f4a261','C',28,'Barcelona, Catalonia','2 contacts · asymptomatic · preventive quarantine');
+  mkr(38.35,-0.48, '#f4a261','!',28,'Alicante, Spain','1 contact · mild symptoms · pending diagnostic test');
 
   // Ship live
   const shipIc = L.divIcon({
@@ -1446,11 +1439,11 @@ function init2D() {
         L.geoJSON(f, {
           style: {
             fillColor: info.color,
-            fillOpacity: 0.13,
+            fillOpacity: 0.07,
             color: info.color,
-            weight: 1.5,
-            dashArray: '6,5',
-            opacity: 0.65
+            weight: 1,
+            dashArray: '5,6',
+            opacity: 0.4
           }
         }).addTo(map2);
       });
