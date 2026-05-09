@@ -1388,33 +1388,31 @@ function init2D() {
   }
 
   // Origin & route stops
-  mkr(-54.80,-68.30,'#e63946','⚑',32,'Ushuaia, Argentina','Departure point · April 1, 2026 · Journey start');
-  mkr(-15.94,-5.72, '#f4a261','1',34,'Saint Helena (Jamestown)','Passengers disembarked · Under epidemiological contact tracing');
-  mkr(-7.95,-14.37, '#f4a261','1',34,'Ascension Island','1 passenger medically evacuated · April 27, 2026');
-  mkr(15.12,-23.60, '#f4a261','⚓',36,'Praia, Cape Verde','MV Hondius anchored here · Health authorities boarded');
-  mkr(28.29,-16.62, '#22c55e','✈',38,'Canary Islands (Granadilla)','Destination port · No free disembarkation · Protocols active');
+  mkr(-54.80,-68.30,'#e63946','⚑',22,'Ushuaia, Argentina','Departure point · April 1, 2026 · Journey start');
+  mkr(-15.94,-5.72, '#f4a261','1', 22,'Saint Helena (Jamestown)','Passengers disembarked · Under epidemiological contact tracing');
+  mkr(-7.95,-14.37, '#f4a261','1', 22,'Ascension Island','1 passenger medically evacuated · April 27, 2026');
+  mkr(15.12,-23.60, '#f4a261','⚓',24,'Praia, Cape Verde','MV Hondius anchored here · Health authorities boarded');
+  mkr(28.29,-16.62, '#22c55e','✈',26,'Canary Islands (Granadilla)','Destination port · No free disembarkation · Protocols active');
 
-  // Cases / repatriation in Europe (smaller, less intrusive)
-  mkr(40.42,-3.70,  '#9b72cf','14',34,'Madrid, Spain','Hospital Gómez Ulla · 14 Spanish nationals quarantine');
-  mkr(52.37, 4.90,  '#9b72cf','NL',28,'Amsterdam, Netherlands','Dutch nationals repatriation coordination');
-  mkr(51.51,-0.13,  '#9b72cf','UK',28,'London, United Kingdom','UK nationals under contact tracing · Repatriation');
-  mkr(50.11, 8.68,  '#e63946','DE',30,'Frankfurt, Germany','German national deceased aboard · Cases under investigation');
-  mkr(47.38, 8.54,  '#f4a261','CH',28,'Zurich, Switzerland','1 Swiss patient treated after disembarking before alert');
+  // Europe
+  mkr(40.42,-3.70,  '#9b72cf','14',24,'Madrid, Spain','Hospital Gómez Ulla · 14 Spanish nationals quarantine');
+  mkr(52.37, 4.90,  '#9b72cf','NL',22,'Amsterdam, Netherlands','Dutch nationals repatriation coordination');
+  mkr(51.51,-0.13,  '#9b72cf','UK',22,'London, United Kingdom','UK nationals under contact tracing · Repatriation');
+  mkr(50.11, 8.68,  '#e63946','DE',22,'Frankfurt, Germany','German national deceased aboard · Cases under investigation');
+  mkr(47.38, 8.54,  '#f4a261','CH',22,'Zurich, Switzerland','1 Swiss patient treated after disembarking before alert');
+  mkr(41.38, 2.17,  '#f4a261','C', 20,'Barcelona, Catalonia','2 contacts · asymptomatic · preventive quarantine');
+  mkr(38.35,-0.48,  '#f4a261','!', 20,'Alicante, Spain','1 contact · mild symptoms · pending diagnostic test');
 
   // Critical patient
-  mkr(-26.20,28.04, '#e63946','1',34,'Johannesburg, South Africa','1 patient in critical condition · ICU admission');
-  // May 9 contacts in Spain
-  mkr(41.38,2.17,  '#f4a261','C',28,'Barcelona, Catalonia','2 contacts · asymptomatic · preventive quarantine');
-  mkr(38.35,-0.48, '#f4a261','!',28,'Alicante, Spain','1 contact · mild symptoms · pending diagnostic test');
+  mkr(-26.20,28.04, '#e63946','1',24,'Johannesburg, South Africa','1 patient in critical condition · ICU admission');
 
   // Ship live
   const shipIc = L.divIcon({
-    html:`<div style="position:relative;width:50px;height:50px;display:flex;align-items:center;justify-content:center;">
-      <div style="position:absolute;width:50px;height:50px;background:rgba(34,197,94,.3);border-radius:50%;animation:shipPulse 2s ease-out infinite;"></div>
-      <div style="position:absolute;width:34px;height:34px;background:rgba(34,197,94,.18);border-radius:50%;animation:shipPulse 2s ease-out infinite .5s;"></div>
-      <div style="position:relative;width:28px;height:28px;background:#16a34a;border-radius:50%;border:2.5px solid #fff;box-shadow:0 0 14px #22c55e;display:flex;align-items:center;justify-content:center;font-size:13px;">🚢</div>
+    html:`<div style="position:relative;width:30px;height:30px;display:flex;align-items:center;justify-content:center;">
+      <div style="position:absolute;width:30px;height:30px;background:rgba(34,197,94,.3);border-radius:50%;animation:shipPulse 2s ease-out infinite;"></div>
+      <div style="position:relative;width:20px;height:20px;background:#16a34a;border-radius:50%;border:2px solid #fff;box-shadow:0 0 8px #22c55e;display:flex;align-items:center;justify-content:center;font-size:9px;">🚢</div>
     </div>`,
-    iconSize:[50,50], iconAnchor:[25,25], className:''
+    iconSize:[30,30], iconAnchor:[15,15], className:''
   });
   L.marker([21.5,-20.5],{icon:shipIc,zIndexOffset:1000}).addTo(map2)
     .bindPopup(popup('🚢 MV Hondius · LIVE','En route to Tenerife · 147 aboard · 8 cases · SHIP LIVE'));
@@ -1439,11 +1437,11 @@ function init2D() {
         L.geoJSON(f, {
           style: {
             fillColor: info.color,
-            fillOpacity: 0.07,
+            fillOpacity: 0.18,
             color: info.color,
-            weight: 1,
-            dashArray: '5,6',
-            opacity: 0.4
+            weight: 2,
+            dashArray: '6,4',
+            opacity: 0.75
           }
         }).addTo(map2);
       });
