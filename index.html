@@ -1292,14 +1292,14 @@ function buildMapLayers(m) {
   mk(-7.95,-14.37,'#f4a261','1',34,'Ascension Island','1 passenger evacuated · April 27');
   mk(15.12,-23.60,'#f4a261','⚓',36,'Cape Verde','Ship anchored · health authorities boarded');
   mk(28.29,-16.62,'#22c55e','✈',38,'Canary Islands','Destination port · no free disembarkation');
-  mk(40.42,-3.70,'#9b72cf','14',40,'Madrid, Spain','Hospital Gómez Ulla · 14 Spanish nationals');
-  mk(52.37,4.90,'#9b72cf','NL',34,'Amsterdam, Netherlands','Dutch nationals repatriation');
-  mk(51.51,-0.13,'#9b72cf','UK',34,'London, United Kingdom','UK nationals contact tracing');
-  mk(50.11,8.68,'#e63946','DE',36,'Frankfurt, Germany','German national deceased · cases investigated');
+  mk(40.42,-3.70,'#9b72cf','14',40,'Madrid, Spain','14 Spanish nationals · Hospital Gómez Ulla · preventive quarantine');
+  mk(52.37,4.90,'#9b72cf','2',34,'Amsterdam, Netherlands','2 Dutch nationals deceased (confirmed deaths) · Repatriation coordination');
+  mk(51.51,-0.13,'#9b72cf','-',34,'London, United Kingdom','No official case count reported · UK nationals under contact tracing and repatriation protocols');
+  mk(50.11,8.68,'#e63946','1',36,'Frankfurt, Germany','1 confirmed death (German national) · Cases under investigation');
   mk(47.38,8.54,'#f4a261','1',34,'Zurich, Switzerland','1 Swiss patient treated post-disembark');
   mk(-26.20,28.04,'#e63946','1',38,'Johannesburg, South Africa','1 patient critical — ICU');
-  mk(48.86,2.35,'#e63946','FR',34,'Paris, France','1 confirmed case · PCR positive · May 11');
-  mk(41.26,-96.01,'#e63946','US',34,'Omaha, Nebraska (USA)','1 confirmed case · mild PCR positive · May 11 · Biocontainment');
+  mk(48.86,2.35,'#e63946','1',34,'Paris, France','1 confirmed case · PCR positive · May 11 · Confirmed by PM Lecornu');
+  mk(41.26,-96.01,'#e63946','1',34,'Omaha, Nebraska (USA)','1 confirmed case · PCR positive (mild) · May 11 · HHS confirmed · Biocontainment unit');
 
   L.marker([21.5,-20.5],{icon:L.divIcon({html:`<div style="position:relative;width:50px;height:50px;display:flex;align-items:center;justify-content:center;"><div style="position:absolute;width:50px;height:50px;background:rgba(34,197,94,.3);border-radius:50%;animation:shipPulse 2s ease-out infinite;"></div><div style="position:relative;width:28px;height:28px;background:#16a34a;border-radius:50%;border:2.5px solid #fff;box-shadow:0 0 14px #22c55e;display:flex;align-items:center;justify-content:center;font-size:13px;">🚢</div></div>`,iconSize:[50,50],iconAnchor:[25,25],className:''}),zIndexOffset:1000}).addTo(m)
     .bindPopup(pp('🚢 MV Hondius · LIVE','En route to Tenerife · 147 aboard · 8 cases'));
@@ -1470,20 +1470,20 @@ function init2D() {
 
   // CONFIRMED (red) — actual confirmed cases/deaths
   mkr(-54.80,-68.30,'#e63946','⚑',22,'Ushuaia, Argentina','Probable origin of exposure · April 1, 2026 · Journey start', lgConfirmed);
-  mkr(50.11, 8.68,  '#e63946','DE',22,'Frankfurt, Germany','German national deceased aboard · Cases under investigation', lgConfirmed);
+  mkr(50.11, 8.68,  '#e63946','1', 22,'Frankfurt, Germany','1 confirmed death (German national) · Cases under investigation', lgConfirmed);
   mkr(-26.20,28.04, '#e63946','1', 24,'Johannesburg, South Africa','1 patient in critical condition · ICU admission', lgConfirmed);
-  mkr(48.86, 2.35,  '#e63946','FR',22,'Paris, France','1 confirmed case · PCR positive · May 11 · Confirmed by PM Lecornu', lgConfirmed);
-  mkr(41.26,-96.01, '#e63946','US',22,'Omaha, Nebraska (USA)','1 confirmed case · PCR positive (mild) · May 11 · Biocontainment unit', lgConfirmed);
+  mkr(48.86, 2.35,  '#e63946','1', 22,'Paris, France','1 confirmed case · PCR positive · May 11 · Confirmed by PM Lecornu', lgConfirmed);
+  mkr(41.26,-96.01, '#e63946','1', 22,'Omaha, Nebraska (USA)','1 confirmed case · PCR positive (mild) · May 11 · Biocontainment unit · HHS confirmed', lgConfirmed);
 
   // SUSPECTED / QUARANTINE (amber + purple) — contacts, monitoring, repatriation
-  mkr(-15.94,-5.72, '#f4a261','1', 22,'Saint Helena (Jamestown)','Passengers disembarked · Under epidemiological contact tracing', lgSuspected);
+  mkr(-15.94,-5.72, '#f4a261','1', 22,'Saint Helena (Jamestown)','1 passenger disembarked · Under epidemiological contact tracing', lgSuspected);
   mkr(-7.95,-14.37, '#f4a261','1', 22,'Ascension Island','1 passenger medically evacuated · April 27, 2026', lgSuspected);
   mkr(15.12,-23.60, '#f4a261','⚓',24,'Praia, Cape Verde','MV Hondius anchored here · Health authorities boarded', lgSuspected);
-  mkr(47.38, 8.54,  '#f4a261','CH',22,'Zurich, Switzerland','1 Swiss patient treated after disembarking before alert', lgSuspected);
-  mkr(41.38, 2.17,  '#f4a261','C', 20,'Barcelona, Catalonia','2 contacts · asymptomatic · preventive quarantine', lgSuspected);
-  mkr(40.42,-3.70,  '#9b72cf','14',24,'Madrid, Spain','Hospital Gómez Ulla · 14 Spanish nationals · preventive quarantine', lgSuspected);
-  mkr(52.37, 4.90,  '#9b72cf','NL',22,'Amsterdam, Netherlands','Dutch nationals repatriation coordination', lgSuspected);
-  mkr(51.51,-0.13,  '#9b72cf','UK',22,'London, United Kingdom','UK nationals under contact tracing · Repatriation', lgSuspected);
+  mkr(47.38, 8.54,  '#f4a261','1', 22,'Zurich, Switzerland','1 Swiss patient treated after disembarking before alert', lgSuspected);
+  mkr(41.38, 2.17,  '#f4a261','2', 20,'Barcelona, Catalonia','2 contacts under surveillance · asymptomatic · preventive quarantine', lgSuspected);
+  mkr(40.42,-3.70,  '#9b72cf','14',24,'Madrid, Spain','14 Spanish nationals · Hospital Gómez Ulla · preventive quarantine', lgSuspected);
+  mkr(52.37, 4.90,  '#9b72cf','2', 22,'Amsterdam, Netherlands','2 Dutch nationals deceased (confirmed deaths) · Repatriation coordination', lgSuspected);
+  mkr(51.51,-0.13,  '#9b72cf','-', 22,'London, United Kingdom','No official case count reported · UK nationals under contact tracing and repatriation protocols', lgSuspected);
 
   // PCR NEGATIVE — cleared contacts
   mkr(38.35,-0.48,  '#22c55e','✓', 20,'Alicante, Spain','PCR NEGATIVE · May 10 · Contact not confirmed · Under monitoring', lgNegative);
