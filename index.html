@@ -359,6 +359,17 @@
       .mc-val { font-size: 1.7rem; }
       .dash-grid { grid-template-columns: 1fr; }
     }
+    /* ===== MAP FILTER BAR ===== */
+    .mf-bar { display:flex; gap:7px; flex-wrap:wrap; margin-bottom:12px; }
+    .mf-btn { padding:6px 14px; border-radius:100px; font-family:var(--font); font-size:.72rem; font-weight:700; cursor:pointer; border:1px solid var(--bdr); background:var(--glass); color:var(--sub); transition:var(--ease); letter-spacing:.02em; white-space:nowrap; }
+    .mf-btn:hover { color:var(--white); border-color:rgba(255,255,255,.15); }
+    .mf-btn.on { color:#fff; border-color:transparent; }
+    .mf-btn.on[data-filter="all"]       { background:rgba(255,255,255,.12); color:var(--white); }
+    .mf-btn.on[data-filter="confirmed"] { background:var(--red); }
+    .mf-btn.on[data-filter="suspected"] { background:var(--amber); color:#0b0b0b; }
+    .mf-btn.on[data-filter="negative"]  { background:#22c55e; color:#0b0b0b; }
+    .mf-btn.on[data-filter="route"]     { background:var(--blue); }
+
     /* ===== DISCLAIMER MODAL ===== */
     #disclaimer-overlay { position:fixed; inset:0; z-index:9999; background:rgba(5,5,10,.82); backdrop-filter:blur(6px); display:flex; align-items:center; justify-content:center; padding:20px; }
     #disclaimer-overlay.hidden { display:none; }
@@ -504,6 +515,15 @@
         <button id="replay-btn" onclick="replayRoute()" data-en="▶ Replay Route" data-es="▶ Reproducir ruta" style="background:rgba(244,162,97,.12);border:1px solid rgba(244,162,97,.4);color:#f4a261;font-size:.75rem;font-weight:700;padding:7px 14px;border-radius:8px;cursor:pointer;transition:background .2s;white-space:nowrap;">▶ Replay Route</button>
         <button onclick="openFullMap()" data-en="⤢ Full Map" data-es="⤢ Mapa completo" style="background:rgba(72,149,239,.12);border:1px solid rgba(72,149,239,.4);color:#4895ef;font-size:.75rem;font-weight:700;padding:7px 14px;border-radius:8px;cursor:pointer;transition:background .2s;white-space:nowrap;">⤢ Full Map</button>
       </div>
+    </div>
+
+    <!-- MAP FILTER BAR (2D only) -->
+    <div class="mf-bar fu" id="map-filter-bar">
+      <button class="mf-btn on" data-filter="all"       onclick="setMapFilter('all')"       data-en="All"       data-es="Todo">All</button>
+      <button class="mf-btn"    data-filter="confirmed" onclick="setMapFilter('confirmed')" data-en="Confirmed" data-es="Confirmados">Confirmed</button>
+      <button class="mf-btn"    data-filter="suspected" onclick="setMapFilter('suspected')" data-en="Suspected" data-es="Sospechosos">Suspected</button>
+      <button class="mf-btn"    data-filter="negative"  onclick="setMapFilter('negative')"  data-en="PCR −"     data-es="PCR −">PCR −</button>
+      <button class="mf-btn"    data-filter="route"     onclick="setMapFilter('route')"     data-en="Route"     data-es="Ruta">Route</button>
     </div>
 
     <div class="map-wrap fu d1">
@@ -1225,6 +1245,7 @@ function initIncubBar() {
 //  2D MAP — Leaflet
 // ============================================================
 let map2 = null;
+let lgRoute, lgConfirmed, lgSuspected, lgNegative;
 
 // Route animation state
 let animTimer = null, animLayer = null, animMarker = null;
@@ -1414,19 +1435,23 @@ function init2D() {
     attribution:'© OpenStreetMap © CARTO', subdomains:'abcd', maxZoom:19
   }).addTo(map2);
 
-  // — SHIP ROUTE (orange dashed) —
-  // Ushuaia → Falklands → St Helena → Ascension Island → Cape Verde → Ship pos → Canary Islands
+  // Layer groups — one per filter category
+  lgRoute     = L.layerGroup().addTo(map2);
+  lgConfirmed = L.layerGroup().addTo(map2);
+  lgSuspected = L.layerGroup().addTo(map2);
+  lgNegative  = L.layerGroup().addTo(map2);
+
+  // — SHIP ROUTE (orange dashed) → lgRoute
   L.polyline([
     [-54.80,-68.30],[-51.70,-57.85],[-15.94,-5.72],[-7.95,-14.37],
     [15.12,-23.60],[21.5,-20.5],[28.29,-16.62]
-  ], { color:'#f4a261', weight:2.5, dashArray:'10,7', opacity:.9 }).addTo(map2);
+  ], { color:'#f4a261', weight:2.5, dashArray:'10,7', opacity:.9 }).addTo(lgRoute);
 
-  // — SINGLE REPATRIATION LINE (Tenerife → Europe, subtle) —
-  L.polyline([[28.29,-16.62],[47.00,8.00]], {color:'#9b72cf',weight:1,dashArray:'4,8',opacity:.3}).addTo(map2);
+  // — REPATRIATION LINE (Tenerife → Europe) → lgSuspected
+  L.polyline([[28.29,-16.62],[47.00,8.00]], {color:'#9b72cf',weight:1,dashArray:'4,8',opacity:.3}).addTo(lgSuspected);
 
-  // — PATIENT EVACUATION (red dashed, subtle) —
-  L.polyline([[-7.95,-14.37],[-26.20,28.04]],
-    {color:'#e63946',weight:1.2,dashArray:'4,9',opacity:.4}).addTo(map2);
+  // — PATIENT EVACUATION (red dashed) → lgConfirmed
+  L.polyline([[-7.95,-14.37],[-26.20,28.04]], {color:'#e63946',weight:1.2,dashArray:'4,9',opacity:.4}).addTo(lgConfirmed);
 
   const popup = (label, detail) =>
     `<div style="font-family:Inter,sans-serif;background:#0e1117;color:#f5f5f7;padding:14px 16px;border-radius:10px;min-width:220px;font-size:.82rem;border:1px solid rgba(255,255,255,.1);">
@@ -1434,39 +1459,38 @@ function init2D() {
       <span style="color:#8e8e9a;font-size:.76rem;line-height:1.55;">${detail}</span>
     </div>`;
 
-  function mkr(lat, lng, color, badge, sz, label, detail) {
+  function mkr(lat, lng, color, badge, sz, label, detail, lg) {
     const s = sz || 36;
     const ic = L.divIcon({
       html:`<div style="width:${s}px;height:${s}px;background:${color};border-radius:50%;border:2px solid rgba(255,255,255,.8);box-shadow:0 0 0 3px ${color}55,0 2px 10px ${color}77;display:flex;align-items:center;justify-content:center;font-family:Inter,sans-serif;font-weight:800;font-size:${s>34?'.76':'0.65'}rem;color:#fff;cursor:pointer;">${badge}</div>`,
       iconSize:[s,s], iconAnchor:[s/2,s/2], className:''
     });
-    L.marker([lat,lng],{icon:ic}).addTo(map2).bindPopup(popup(label,detail));
+    L.marker([lat,lng],{icon:ic}).addTo(lg).bindPopup(popup(label,detail));
   }
 
-  // Origin & route stops
-  mkr(-54.80,-68.30,'#e63946','⚑',22,'Ushuaia, Argentina','Departure point · April 1, 2026 · Journey start');
-  mkr(-15.94,-5.72, '#f4a261','1', 22,'Saint Helena (Jamestown)','Passengers disembarked · Under epidemiological contact tracing');
-  mkr(-7.95,-14.37, '#f4a261','1', 22,'Ascension Island','1 passenger medically evacuated · April 27, 2026');
-  mkr(15.12,-23.60, '#f4a261','⚓',24,'Praia, Cape Verde','MV Hondius anchored here · Health authorities boarded');
-  mkr(28.29,-16.62, '#22c55e','✈',26,'Canary Islands (Granadilla)','Destination port · No free disembarkation · Protocols active');
+  // CONFIRMED (red) — actual confirmed cases/deaths
+  mkr(-54.80,-68.30,'#e63946','⚑',22,'Ushuaia, Argentina','Probable origin of exposure · April 1, 2026 · Journey start', lgConfirmed);
+  mkr(50.11, 8.68,  '#e63946','DE',22,'Frankfurt, Germany','German national deceased aboard · Cases under investigation', lgConfirmed);
+  mkr(-26.20,28.04, '#e63946','1', 24,'Johannesburg, South Africa','1 patient in critical condition · ICU admission', lgConfirmed);
+  mkr(48.86, 2.35,  '#e63946','FR',22,'Paris, France','1 confirmed case · PCR positive · May 11 · Confirmed by PM Lecornu', lgConfirmed);
+  mkr(41.26,-96.01, '#e63946','US',22,'Omaha, Nebraska (USA)','1 confirmed case · PCR positive (mild) · May 11 · Biocontainment unit', lgConfirmed);
 
-  // Europe
-  mkr(40.42,-3.70,  '#9b72cf','14',24,'Madrid, Spain','Hospital Gómez Ulla · 14 Spanish nationals quarantine');
-  mkr(52.37, 4.90,  '#9b72cf','NL',22,'Amsterdam, Netherlands','Dutch nationals repatriation coordination');
-  mkr(51.51,-0.13,  '#9b72cf','UK',22,'London, United Kingdom','UK nationals under contact tracing · Repatriation');
-  mkr(50.11, 8.68,  '#e63946','DE',22,'Frankfurt, Germany','German national deceased aboard · Cases under investigation');
-  mkr(47.38, 8.54,  '#f4a261','CH',22,'Zurich, Switzerland','1 Swiss patient treated after disembarking before alert');
-  mkr(41.38, 2.17,  '#f4a261','C', 20,'Barcelona, Catalonia','2 contacts · asymptomatic · preventive quarantine');
-  mkr(38.35,-0.48,  '#22c55e','✓', 20,'Alicante, Spain','PCR NEGATIVE · May 10 · Contact not confirmed · Mild symptoms, under monitoring');
+  // SUSPECTED / QUARANTINE (amber + purple) — contacts, monitoring, repatriation
+  mkr(-15.94,-5.72, '#f4a261','1', 22,'Saint Helena (Jamestown)','Passengers disembarked · Under epidemiological contact tracing', lgSuspected);
+  mkr(-7.95,-14.37, '#f4a261','1', 22,'Ascension Island','1 passenger medically evacuated · April 27, 2026', lgSuspected);
+  mkr(15.12,-23.60, '#f4a261','⚓',24,'Praia, Cape Verde','MV Hondius anchored here · Health authorities boarded', lgSuspected);
+  mkr(47.38, 8.54,  '#f4a261','CH',22,'Zurich, Switzerland','1 Swiss patient treated after disembarking before alert', lgSuspected);
+  mkr(41.38, 2.17,  '#f4a261','C', 20,'Barcelona, Catalonia','2 contacts · asymptomatic · preventive quarantine', lgSuspected);
+  mkr(40.42,-3.70,  '#9b72cf','14',24,'Madrid, Spain','Hospital Gómez Ulla · 14 Spanish nationals · preventive quarantine', lgSuspected);
+  mkr(52.37, 4.90,  '#9b72cf','NL',22,'Amsterdam, Netherlands','Dutch nationals repatriation coordination', lgSuspected);
+  mkr(51.51,-0.13,  '#9b72cf','UK',22,'London, United Kingdom','UK nationals under contact tracing · Repatriation', lgSuspected);
 
-  // NEW May 11 — repatriate positives
-  mkr(48.86, 2.35,  '#e63946','FR',22,'Paris, France','1 confirmed case · PCR positive · May 11 · Confirmed by PM Lecornu');
-  mkr(41.26,-96.01, '#e63946','US',22,'Omaha, Nebraska (USA)','1 confirmed case · PCR positive (mild) · May 11 · Biocontainment unit · HHS confirmed');
+  // PCR NEGATIVE — cleared contacts
+  mkr(38.35,-0.48,  '#22c55e','✓', 20,'Alicante, Spain','PCR NEGATIVE · May 10 · Contact not confirmed · Under monitoring', lgNegative);
 
-  // Critical patient
-  mkr(-26.20,28.04, '#e63946','1',24,'Johannesburg, South Africa','1 patient in critical condition · ICU admission');
+  // ROUTE — destination + ship live marker
+  mkr(28.29,-16.62, '#22c55e','✈',26,'Canary Islands (Granadilla)','Destination port · Controlled disembarkation completed · May 10', lgRoute);
 
-  // Ship live
   const shipIc = L.divIcon({
     html:`<div style="position:relative;width:30px;height:30px;display:flex;align-items:center;justify-content:center;">
       <div style="position:absolute;width:30px;height:30px;background:rgba(34,197,94,.3);border-radius:50%;animation:shipPulse 2s ease-out infinite;"></div>
@@ -1474,56 +1498,24 @@ function init2D() {
     </div>`,
     iconSize:[30,30], iconAnchor:[15,15], className:''
   });
-  L.marker([21.5,-20.5],{icon:shipIc,zIndexOffset:1000}).addTo(map2)
-    .bindPopup(popup('🚢 MV Hondius · LIVE','En route to Tenerife · 147 aboard · 8 cases · SHIP LIVE'));
+  L.marker([21.5,-20.5],{icon:shipIc,zIndexOffset:1000}).addTo(lgRoute)
+    .bindPopup(popup('🚢 MV Hondius · LIVE','Disembarked Tenerife May 10 · 147 aboard · 10 linked cases'));
 
-  // Country highlight polygons (TopoJSON world-atlas)
-  const AFFECTED = {
-    32:  { color:'#e63946', label:'Argentina' },        // origin
-    710: { color:'#e63946', label:'South Africa' },     // ICU patient
-    276: { color:'#9b72cf', label:'Germany' },          // death + cases
-    528: { color:'#9b72cf', label:'Netherlands' },      // repatriation
-    826: { color:'#9b72cf', label:'United Kingdom' },   // repatriation
-    724: { color:'#9b72cf', label:'Spain' },            // quarantine
-    756: { color:'#f4a261', label:'Switzerland' },      // case
+  // Country highlight polygons → lgConfirmed (all affected country outlines)
+  const CTRY_GROUPS = {
+    32:{color:'#e63946'}, 710:{color:'#e63946'}, 840:{color:'#e63946'}, 250:{color:'#e63946'},
+    276:{color:'#9b72cf'}, 528:{color:'#9b72cf'}, 826:{color:'#9b72cf'}, 724:{color:'#9b72cf'},
+    756:{color:'#f4a261'}
   };
   fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json')
     .then(r => r.json())
     .then(world => {
-      const features = topojson.feature(world, world.objects.countries).features;
-      features.forEach(f => {
-        const info = AFFECTED[+f.id];
+      topojson.feature(world, world.objects.countries).features.forEach(f => {
+        const info = CTRY_GROUPS[+f.id];
         if (!info) return;
-        L.geoJSON(f, {
-          style: {
-            fillColor: info.color,
-            fillOpacity: 0.18,
-            color: info.color,
-            weight: 2,
-            dashArray: '6,4',
-            opacity: 0.75
-          }
-        }).addTo(map2);
+        L.geoJSON(f, { style:{ fillColor:info.color, fillOpacity:0.15, color:info.color, weight:1.5, dashArray:'6,4', opacity:0.65 }}).addTo(lgConfirmed);
       });
-    })
-    .catch(() => {}); // silently fail if offline
-
-  // Legend
-  const legend = L.control({position:'bottomleft'});
-  legend.onAdd = () => {
-    const d = L.DomUtil.create('div');
-    d.innerHTML = `<div style="background:rgba(10,10,16,.9);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:9px 13px;font-family:Inter,sans-serif;font-size:.67rem;color:#aaa;line-height:2;">
-      <div style="display:flex;align-items:center;gap:7px;"><span style="width:18px;border-top:2px dashed #f4a261;display:inline-block;"></span>Ship route</div>
-      <div style="display:flex;align-items:center;gap:7px;"><span style="width:18px;border-top:2px dashed #9b72cf;display:inline-block;"></span>Repatriation / flights</div>
-      <div style="display:flex;align-items:center;gap:7px;"><span style="width:18px;border-top:2px dashed #e63946;display:inline-block;"></span>Patient evacuation</div>
-      <div style="display:flex;align-items:center;gap:7px;"><span style="width:10px;height:10px;background:#22c55e;border-radius:50%;display:inline-block;"></span>Ship live</div>
-      <div style="display:flex;align-items:center;gap:7px;"><span style="width:10px;height:10px;background:#e63946;border-radius:50%;display:inline-block;"></span>Confirmed / death</div>
-      <div style="display:flex;align-items:center;gap:7px;"><span style="width:10px;height:10px;background:#f4a261;border-radius:50%;display:inline-block;"></span>Exposure / stop</div>
-      <div style="display:flex;align-items:center;gap:7px;"><span style="width:10px;height:10px;background:#9b72cf;border-radius:50%;display:inline-block;"></span>Repatriation point</div>
-    </div>`;
-    return d;
-  };
-  legend.addTo(map2);
+    }).catch(()=>{});
 }
 
 // ============================================================
@@ -1685,12 +1677,28 @@ function resizeGlobe() {
 // ============================================================
 //  MAP TOGGLE
 // ============================================================
+function setMapFilter(filter) {
+  if (!map2) return;
+  const groups = { route:lgRoute, confirmed:lgConfirmed, suspected:lgSuspected, negative:lgNegative };
+  if (filter === 'all') {
+    Object.values(groups).forEach(lg => { if (lg && !map2.hasLayer(lg)) lg.addTo(map2); });
+  } else {
+    Object.entries(groups).forEach(([k,lg]) => {
+      if (!lg) return;
+      if (k === filter) { if (!map2.hasLayer(lg)) lg.addTo(map2); }
+      else              { if (map2.hasLayer(lg))  map2.removeLayer(lg); }
+    });
+  }
+  document.querySelectorAll('.mf-btn').forEach(b => b.classList.toggle('on', b.dataset.filter === filter));
+}
+
 function switchMap(mode) {
   const is2d = mode==='2d';
   document.getElementById('map2d').style.display = is2d ? 'block' : 'none';
   document.getElementById('map3d').style.display = is2d ? 'none'  : 'block';
   document.getElementById('btn2d').classList.toggle('on', is2d);
   document.getElementById('btn3d').classList.toggle('on', !is2d);
+  document.getElementById('map-filter-bar').style.display = is2d ? '' : 'none';
   if(is2d) { init2D(); setTimeout(() => map2&&map2.invalidateSize(),50); }
   else      { setTimeout(() => { init3D(); resizeGlobe(); }, 60); }
 }
