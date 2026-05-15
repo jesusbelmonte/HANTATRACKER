@@ -1342,7 +1342,7 @@ function buildMapLayers(m) {
   mk(-7.95,-14.37,'#f4a261','1',34,'Ascension Island','1 passenger evacuated · April 27');
   mk(15.12,-23.60,'#f4a261','⚓',36,'Cape Verde','Ship anchored · health authorities boarded');
   mk(28.29,-16.62,'#22c55e','✈',38,'Canary Islands','Destination port · no free disembarkation');
-  mk(40.42,-3.70,'#9b72cf','14',40,'Madrid, Spain','1 confirmed positive (stable, mild) + 13 negative · Gómez Ulla · Quarantine until June 21');
+  mk(40.42,-3.70,'#e63946','14',40,'Madrid, Spain','1 CONFIRMED positive (stable, mild) + 13 negative · Gómez Ulla · Quarantine until June 21');
   mk(52.37,4.90,'#9b72cf','2',34,'Amsterdam, Netherlands','2 Dutch nationals deceased (confirmed deaths) · Repatriation coordination');
   mk(51.51,-0.13,'#9b72cf','-',34,'London, United Kingdom','No official case count reported · UK nationals under contact tracing and repatriation protocols');
   mk(50.11,8.68,'#e63946','1',36,'Frankfurt, Germany','1 confirmed death (German national) · Cases under investigation');
@@ -1354,7 +1354,7 @@ function buildMapLayers(m) {
   L.marker([21.5,-20.5],{icon:L.divIcon({html:`<div style="position:relative;width:50px;height:50px;display:flex;align-items:center;justify-content:center;"><div style="position:absolute;width:50px;height:50px;background:rgba(34,197,94,.3);border-radius:50%;animation:shipPulse 2s ease-out infinite;"></div><div style="position:relative;width:28px;height:28px;background:#16a34a;border-radius:50%;border:2.5px solid #fff;box-shadow:0 0 14px #22c55e;display:flex;align-items:center;justify-content:center;font-size:13px;">🚢</div></div>`,iconSize:[50,50],iconAnchor:[25,25],className:''}),zIndexOffset:1000}).addTo(m)
     .bindPopup(pp('🚢 MV Hondius · LIVE','En route to Tenerife · 147 aboard · 8 cases'));
 
-  const AFFECTED={32:{color:'#e63946'},710:{color:'#e63946'},276:{color:'#9b72cf'},528:{color:'#9b72cf'},826:{color:'#9b72cf'},724:{color:'#9b72cf'},756:{color:'#f4a261'},840:{color:'#e63946'},250:{color:'#e63946'}};
+  const AFFECTED={32:{color:'#e63946'},710:{color:'#e63946'},276:{color:'#9b72cf'},528:{color:'#9b72cf'},826:{color:'#9b72cf'},724:{color:'#e63946'},756:{color:'#f4a261'},840:{color:'#e63946'},250:{color:'#e63946'}};
   fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json')
     .then(r=>r.json()).then(world=>{
       topojson.feature(world,world.objects.countries).features.forEach(f=>{
@@ -1531,7 +1531,7 @@ function init2D() {
   mkr(15.12,-23.60, '#f4a261','⚓',24,'Praia, Cape Verde','MV Hondius anchored here · Health authorities boarded', lgSuspected);
   mkr(47.38, 8.54,  '#f4a261','1', 22,'Zurich, Switzerland','1 Swiss patient treated after disembarking before alert', lgSuspected);
   mkr(41.38, 2.17,  '#f4a261','2', 20,'Barcelona, Catalonia','2 contacts under surveillance · asymptomatic · preventive quarantine', lgSuspected);
-  mkr(40.42,-3.70,  '#9b72cf','14',24,'Madrid, Spain','1 confirmed positive (stable, mild) + 13 negative · Hospital Gómez Ulla · Day Zero: May 10 · Quarantine until June 21', lgSuspected);
+  mkr(40.42,-3.70,  '#e63946','14',24,'Madrid, Spain','1 CONFIRMED positive (stable, mild) + 13 negative · Hospital Gómez Ulla · Day Zero: May 10 · Quarantine until June 21', lgConfirmed);
   mkr(52.37, 4.90,  '#9b72cf','2', 22,'Amsterdam, Netherlands','2 Dutch nationals deceased (confirmed deaths) · Repatriation coordination', lgSuspected);
   mkr(51.51,-0.13,  '#9b72cf','-', 22,'London, United Kingdom','No official case count reported · UK nationals under contact tracing and repatriation protocols', lgSuspected);
 
@@ -1554,7 +1554,7 @@ function init2D() {
   // Country highlight polygons → lgConfirmed (all affected country outlines)
   const CTRY_GROUPS = {
     32:{color:'#e63946'}, 710:{color:'#e63946'}, 840:{color:'#e63946'}, 250:{color:'#e63946'},
-    276:{color:'#9b72cf'}, 528:{color:'#9b72cf'}, 826:{color:'#9b72cf'}, 724:{color:'#9b72cf'},
+    276:{color:'#9b72cf'}, 528:{color:'#9b72cf'}, 826:{color:'#9b72cf'}, 724:{color:'#e63946'},
     756:{color:'#f4a261'}
   };
   fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json')
